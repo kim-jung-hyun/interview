@@ -1,72 +1,13 @@
 # 기본 구조와 개념 — 거버넌스 매니저 인터뷰용
 
-> **이 문서가 이번 인터뷰의 본체다.** 코드도 실험 수치도 없다. 그건 기술 인터뷰(`../tech/`)로 보낸다.
+> **이 문서가 이번 인터뷰의 화면 표시 본체다.** 코드도 실험 수치도 없다. 그건 기술 인터뷰(`../tech/`)로 보낸다.
 > 여기 있는 것은 **어휘·계층·소유권·게이트** 네 가지다. 매니저가 판단하려는 것이 그것이기 때문이다.
 >
 > 계층 어휘는 내가 만든 것이 아니라 세 참조 문서에서 가져왔다 — NIST AI RMF Profile, AWS SRA Scoping Matrix 2종, Microsoft Responsible AI Standard v2.
 >
-> **§0이 기준선이다.** 나머지 절은 기준선의 각 칸을 설명한다.
+> **화면 표시 순서 (1시간 압축판, 내가 말하는 순서 그대로).** **§0(기준선 + 내 산출물 표)만 오프닝 3~4분에 항상 띄운다.** 이후 §1·§2(1.1 자료) → §3(1.2 자료) → §4·§5·§6·§7(1.5 자료) → §8(Q6 첫 90일) 순서로, **전부 질문이 그쪽으로 왔을 때만 편다** — 화면에서 뺀 게 아니라 말하는 순서대로 뒤로 보낸 것이다. 말하기 대본은 `00_note.md` §0-1(오프닝)·§0-2(물으면) 참조. **약어는 맨 뒤 부록으로 옮겼다** — 말하면서 필요할 때 검색해서 쓴다.
 
 ---
-
-## 약어 — 처음 말할 때는 풀어서
-
-**인터뷰에서 약어를 처음 쓸 때 괄호로 풀어 말한다.** 매니저가 그 약어를 모를 수 있고, 아는 경우에도 풀어 말하는 쪽이 정확하다.
-
-### 역할·조직
-
-| 약어 | 원어 | 우리말 |
-|---|---|---|
-| **AI GRC** | AI **G**overnance, **R**isk and **C**ompliance | AI 거버넌스·위험·컴플라이언스 — **지원 포지션명에 포함**: `Staff AI Security Governance Engineer (AI GRC)` |
-| **QE** | **Q**uality **E**ngineering | 품질 엔지니어링 |
-| **TEVV** | **T**est, **E**valuation, **V**erification and **V**alidation | 시험·평가·검증·확인 |
-| **PO** | **P**roduct **O**wner | 제품 책임자 (Scrum 공식 역할) |
-| **SM** | **S**crum **M**aster | 스크럼 마스터 (Scrum 공식 역할) |
-| **BO** | **B**usiness **O**wner | 사업 책임자 |
-| **RAI Approver** | **R**esponsible **AI** Approver | 책임 있는 AI 승인자 |
-| **MLOps** | **M**achine **L**earning **Op**eration**s** | 모델 운영 |
-| **SOC** | **S**ecurity **O**peration **C**enter | 보안 관제 센터 |
-| **RACI** | **R**esponsible · **A**ccountable · **C**onsulted · **I**nformed | 수행·최종책임·협의·통보 |
-
-### 통제·구조
-
-| 약어 | 원어 | 우리말 |
-|---|---|---|
-| **PDP** | **P**olicy **D**ecision **P**oint | 정책 결정 지점 — 허용 여부를 판단하는 곳 |
-| **PEP** | **P**olicy **E**nforcement **P**oint | 정책 집행 지점 — 결정을 강제하는 곳 |
-| **KRI** | **K**ey **R**isk **I**ndicator | 핵심 위험 지표 |
-| **DLP** | **D**ata **L**oss **P**revention | 데이터 유출 방지 |
-| **E2E** | **E**nd-**to**-**E**nd | 종단 간 — 경계를 통과하는 전체 경로 |
-| **DoD** | **D**efinition **o**f **D**one | 완료 정의 (Scrum) |
-
-### 프레임워크·규제
-
-| 약어 | 원어 | 우리말 |
-|---|---|---|
-| **AI RMF** | AI **R**isk **M**anagement **F**ramework (NIST) | NIST AI 위험관리 프레임워크 |
-| **NIST** | **N**ational **I**nstitute of **S**tandards and **T**echnology | 미국 국립표준기술연구소 |
-| **SRA** | **S**ecurity **R**eference **A**rchitecture (AWS) | 보안 참조 아키텍처 |
-| **RAI Standard** | **R**esponsible **AI** Standard (Microsoft) | 마이크로소프트 책임 있는 AI 표준 |
-| **PIPA** | **P**ersonal **I**nformation **P**rotection **A**ct | 개인정보보호법 |
-| **EU AI Act** | European Union **A**rtificial **I**ntelligence **Act** | EU 인공지능법 |
-| **GPAI** | **G**eneral-**P**urpose **AI** | 범용 인공지능 |
-| **PIPC** | **P**ersonal **I**nformation **P**rotection **C**ommission | 개인정보보호위원회 |
-
-### AI·기술
-
-| 약어 | 원어 | 우리말 |
-|---|---|---|
-| **LLM** | **L**arge **L**anguage **M**odel | 대형 언어 모델 |
-| **RAG** | **R**etrieval-**A**ugmented **G**eneration | 검색 증강 생성 |
-| **SaaS** | **S**oftware **a**s **a** **S**ervice | 서비스형 소프트웨어 |
-| **IAM** | **I**dentity and **A**ccess **M**anagement | 신원·접근 관리 |
-| **PoC** | **P**roof **o**f **C**oncept | 개념 검증 |
-| **JD** | **J**ob **D**escription | 직무 기술서 |
-
-**풀어 말할 때 예시**
-> "AI GRC — **AI 거버넌스·위험·컴플라이언스** 역할입니다."
-> "PDP와 PEP, 즉 **정책 결정 지점과 정책 집행 지점**을 분리합니다."
-> "TEVV — **시험·평가·검증·확인**을 담당하는 조직입니다."
 
 ## 0. 기준선 — 이 인터뷰 전체의 기준
 
@@ -118,6 +59,8 @@
 
 ## 1. 통제 원칙 — 다섯 계층
 
+> **1.1 자료 · 오프닝에서는 안 띄운다.** Q3류("policy냐 guardrail이냐") 질문이 오면 편다 — `00_note.md` §0-2.
+
 > **기준선 위치** 이 계층은 **구현**의 형태다. 내가 산출물 ①로 개발팀에 넘기는 구조가 이것이다.
 
 **출처** NIST AI RMF Profile, Target Control Architecture
@@ -139,6 +82,8 @@
 ---
 
 ## 2. Policy와 Guardrail은 다르다
+
+> **1.1 자료 · 오프닝에서는 안 띄운다.** 오프닝에서는 한 문장("산출물①은 Policy 계층")으로 접는다. 이 절 전체는 Q3·1.1 자기진단 질문이 오면 편다 — `00_note.md` §0-2.
 
 > **기준선 위치** **Policy = 기준(내 자리) / Guardrail = 판정·집행 도구(Control Owner = Assurance).** 이 절은 **분리선 ③의 기술적 형태**다 — 기준과 집행이 한 파일에 섞이면 ③이 무너진다.
 
@@ -222,6 +167,8 @@ Policy와 Guardrail의 구별은 **시스템에서 두 지점으로 나타난다
 
 ## 3. 누가 무엇을 소유하는가 — 기준선의 역할 상세
 
+> **1.2 자료 · 오프닝에서는 안 띄운다.** 오프닝은 §0의 산출물 표 하나로 대신한다. 이 절은 역할 범위 질문(Q4-1·Q5)이 오면 편다 — `00_note.md` §0-2.
+
 **출처** Microsoft Responsible AI Standard v2 운영모델 / NIST AI RMF Profile GOVERN — "Policy Owner, Implementation Owner, Assurance Owner 및 Risk Owner의 책임을 구분한다"
 
 | 진영 | 역할 | Accountability |
@@ -278,6 +225,8 @@ Policy와 Guardrail의 구별은 **시스템에서 두 지점으로 나타난다
 
 ## 4. 통제 범위 — 누가 무엇을 control하는가
 
+> **1.5 자료 · 오프닝에서는 안 띄운다.** Scope 질문·Q2(외부 SaaS)가 오면 편다.
+
 > **기준선 위치** Scope 좌표는 **기준**이 정한다. 그 좌표에 따라 통제를 직접 구현할지(구현) 계약·증빙으로 요구할지가 갈리고, **충족 판정은 Assurance**다.
 
 **출처** AWS SRA Generative AI Security Scoping Matrix
@@ -298,6 +247,8 @@ Policy와 Guardrail의 구별은 **시스템에서 두 지점으로 나타난다
 ---
 
 ## 5. 자율성 범위 — 에이전트에 어디까지 권한을 줄 것인가
+
+> **1.5 자료 · 오프닝에서는 안 띄운다.** Q4(통제 실패·fail-safe)가 오면 편다.
 
 > **기준선 위치** Scope를 선언하는 것은 **기준**. Scope가 요구하는 통제를 만드는 것은 **구현**. 그게 실제로 작동하는지는 **판정**. 남는 위험은 **수용**.
 
@@ -341,6 +292,8 @@ Policy와 Guardrail의 구별은 **시스템에서 두 지점으로 나타난다
 
 ## 6. 정책이 살아 있게 만드는 구조 — 기준 변경 게이트
 
+> **1.5 자료 · 오프닝에서는 안 띄운다.** 탭4 승인 화면 데모 직전, 또는 Q1(maintain)이 오면 편다.
+
 > **기준선 위치** 이 루프의 게이트는 **기준 변경 승인**이고 그것만 내 자리다. **시스템 배포 승인(Go/No-go)은 판정 = Assurance**다. 두 승인을 섞으면 분리선 ③이 무너진다.
 
 정책은 한 번 쓰고 끝나지 않는다. 운영 결과가 기준을 다시 바꾸고, **그 변경을 승인으로 통제**한다.
@@ -381,6 +334,8 @@ Policy와 Guardrail의 구별은 **시스템에서 두 지점으로 나타난다
 
 ## 7. 규제를 게이트 조건으로
 
+> **1.5 자료 · 오프닝에서는 안 띄운다.** 규제(PIPA·EU AI Act·AI기본법) 질문이 오면 편다.
+
 > **기준선 위치** 규제 요건을 **기준**으로 번역하는 것이 내 산출물 ①이다. 그 기준의 충족 여부는 **판정**, 잔여 위험 수용은 **수용**이다.
 
 **출처** AI·개인정보 3대 법령 핵심 개념 요약
@@ -408,6 +363,8 @@ Policy와 Guardrail의 구별은 **시스템에서 두 지점으로 나타난다
 ---
 
 ## 8. NIST 4 Function과의 정합성 (물으면)
+
+> **Q6 자료 · 오프닝에서는 안 띄운다.** "첫 90일에 뭘 하시겠습니까" 질문이 오면 편다.
 
 > GOVERN이 판단 기준을 정하고, MAP은 그 기준으로 위험 위치를 찾고, MEASURE는 위험의 크기와 통제 효과를 검증하며, MANAGE는 결과에 따라 위험을 처리하고 지속 추적한다.
 
@@ -444,3 +401,64 @@ NIST Profile이 이 use case에 요구하는 통제 목표 7개에 내 자산을
 3. **수치로 들어가지 않는다.** 이번 인터뷰에서 실험 수치와 코드는 "기술 인터뷰에서 자세히 말씀드리겠다"로 넘긴다.
 4. **자기 진단 세 개는 먼저 꺼낸다** — 정책·가드레일 혼재 / fail-open / Scope 3에 Scope 1 통제. 먼저 말하면 강점, 질문받고 답하면 약점이 된다.
 5. **역할 경계를 침범하지 않는다.** Control Owner 실행과 Internal Audit 보증은 내 자리가 아니라고 명시한다.
+
+---
+
+## 부록. 약어 — 처음 말할 때는 풀어서
+
+**인터뷰에서 약어를 처음 쓸 때 괄호로 풀어 말한다.** 매니저가 그 약어를 모를 수 있고, 아는 경우에도 풀어 말하는 쪽이 정확하다. **말하는 순서에는 없다 — 필요할 때 이 부록에서 검색해서 쓴다.**
+
+### 역할·조직
+
+| 약어 | 원어 | 우리말 |
+|---|---|---|
+| **AI GRC** | AI **G**overnance, **R**isk and **C**ompliance | AI 거버넌스·위험·컴플라이언스 — **지원 포지션명에 포함**: `Staff AI Security Governance Engineer (AI GRC)` |
+| **QE** | **Q**uality **E**ngineering | 품질 엔지니어링 |
+| **TEVV** | **T**est, **E**valuation, **V**erification and **V**alidation | 시험·평가·검증·확인 |
+| **PO** | **P**roduct **O**wner | 제품 책임자 (Scrum 공식 역할) |
+| **SM** | **S**crum **M**aster | 스크럼 마스터 (Scrum 공식 역할) |
+| **BO** | **B**usiness **O**wner | 사업 책임자 |
+| **RAI Approver** | **R**esponsible **AI** Approver | 책임 있는 AI 승인자 |
+| **MLOps** | **M**achine **L**earning **Op**eration**s** | 모델 운영 |
+| **SOC** | **S**ecurity **O**peration **C**enter | 보안 관제 센터 |
+| **RACI** | **R**esponsible · **A**ccountable · **C**onsulted · **I**nformed | 수행·최종책임·협의·통보 |
+
+### 통제·구조
+
+| 약어 | 원어 | 우리말 |
+|---|---|---|
+| **PDP** | **P**olicy **D**ecision **P**oint | 정책 결정 지점 — 허용 여부를 판단하는 곳 |
+| **PEP** | **P**olicy **E**nforcement **P**oint | 정책 집행 지점 — 결정을 강제하는 곳 |
+| **KRI** | **K**ey **R**isk **I**ndicator | 핵심 위험 지표 |
+| **DLP** | **D**ata **L**oss **P**revention | 데이터 유출 방지 |
+| **E2E** | **E**nd-**to**-**E**nd | 종단 간 — 경계를 통과하는 전체 경로 |
+| **DoD** | **D**efinition **o**f **D**one | 완료 정의 (Scrum) |
+
+### 프레임워크·규제
+
+| 약어 | 원어 | 우리말 |
+|---|---|---|
+| **AI RMF** | AI **R**isk **M**anagement **F**ramework (NIST) | NIST AI 위험관리 프레임워크 |
+| **NIST** | **N**ational **I**nstitute of **S**tandards and **T**echnology | 미국 국립표준기술연구소 |
+| **SRA** | **S**ecurity **R**eference **A**rchitecture (AWS) | 보안 참조 아키텍처 |
+| **RAI Standard** | **R**esponsible **AI** Standard (Microsoft) | 마이크로소프트 책임 있는 AI 표준 |
+| **PIPA** | **P**ersonal **I**nformation **P**rotection **A**ct | 개인정보보호법 |
+| **EU AI Act** | European Union **A**rtificial **I**ntelligence **Act** | EU 인공지능법 |
+| **GPAI** | **G**eneral-**P**urpose **AI** | 범용 인공지능 |
+| **PIPC** | **P**ersonal **I**nformation **P**rotection **C**ommission | 개인정보보호위원회 |
+
+### AI·기술
+
+| 약어 | 원어 | 우리말 |
+|---|---|---|
+| **LLM** | **L**arge **L**anguage **M**odel | 대형 언어 모델 |
+| **RAG** | **R**etrieval-**A**ugmented **G**eneration | 검색 증강 생성 |
+| **SaaS** | **S**oftware **a**s **a** **S**ervice | 서비스형 소프트웨어 |
+| **IAM** | **I**dentity and **A**ccess **M**anagement | 신원·접근 관리 |
+| **PoC** | **P**roof **o**f **C**oncept | 개념 검증 |
+| **JD** | **J**ob **D**escription | 직무 기술서 |
+
+**풀어 말할 때 예시**
+> "AI GRC — **AI 거버넌스·위험·컴플라이언스** 역할입니다."
+> "PDP와 PEP, 즉 **정책 결정 지점과 정책 집행 지점**을 분리합니다."
+> "TEVV — **시험·평가·검증·확인**을 담당하는 조직입니다."
