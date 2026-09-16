@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>02_structure</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">02_structure</h1>
+</header>
+<h1 id="기본-구조와-개념--거버넌스-매니저-인터뷰용">기본 구조와 개념 — 거버넌스 매니저 인터뷰용</h1>
+<blockquote>
+<p><strong>이 문서가 이번 인터뷰의 본체다.</strong> 코드도 실험 수치도 없다. 그건 기술 인터뷰(<code>../tech/</code>)로 보낸다. 여기 있는 것은 <strong>어휘·계층·소유권·게이트</strong> 네 가지다. 매니저가 판단하려는 것이 그것이기 때문이다.</p>
+<p>계층 어휘는 내가 만든 것이 아니라 세 참조 문서에서 가져왔다 — NIST AI RMF Profile, AWS SRA Scoping Matrix 2종, Microsoft Responsible AI Standard v2.</p>
+<p><strong>§0이 기준선이다.</strong> 나머지 절은 기준선의 각 칸을 설명한다.</p>
+</blockquote>
+<hr />
+<h2 id="약어--처음-말할-때는-풀어서">약어 — 처음 말할 때는 풀어서</h2>
+<p><strong>인터뷰에서 약어를 처음 쓸 때 괄호로 풀어 말한다.</strong> 매니저가 그 약어를 모를 수 있고, 아는 경우에도 풀어 말하는 쪽이 정확하다.</p>
+<h3 id="역할조직">역할·조직</h3>
+<table>
+<thead>
+<tr class="header">
+<th>약어</th>
+<th>원어</th>
+<th>우리말</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>AI GRC</strong></td>
+<td>AI <strong>G</strong>overnance, <strong>R</strong>isk and <strong>C</strong>ompliance</td>
+<td>AI 거버넌스·위험·컴플라이언스 — <strong>지원 포지션명에 포함</strong>: <code>Staff AI Security Governance Engineer (AI GRC)</code></td>
+</tr>
+<tr class="even">
+<td><strong>QE</strong></td>
+<td><strong>Q</strong>uality <strong>E</strong>ngineering</td>
+<td>품질 엔지니어링</td>
+</tr>
+<tr class="odd">
+<td><strong>TEVV</strong></td>
+<td><strong>T</strong>est, <strong>E</strong>valuation, <strong>V</strong>erification and <strong>V</strong>alidation</td>
+<td>시험·평가·검증·확인</td>
+</tr>
+<tr class="even">
+<td><strong>PO</strong></td>
+<td><strong>P</strong>roduct <strong>O</strong>wner</td>
+<td>제품 책임자 (Scrum 공식 역할)</td>
+</tr>
+<tr class="odd">
+<td><strong>SM</strong></td>
+<td><strong>S</strong>crum <strong>M</strong>aster</td>
+<td>스크럼 마스터 (Scrum 공식 역할)</td>
+</tr>
+<tr class="even">
+<td><strong>BO</strong></td>
+<td><strong>B</strong>usiness <strong>O</strong>wner</td>
+<td>사업 책임자</td>
+</tr>
+<tr class="odd">
+<td><strong>RAI Approver</strong></td>
+<td><strong>R</strong>esponsible <strong>AI</strong> Approver</td>
+<td>책임 있는 AI 승인자</td>
+</tr>
+<tr class="even">
+<td><strong>MLOps</strong></td>
+<td><strong>M</strong>achine <strong>L</strong>earning <strong>Op</strong>eration<strong>s</strong></td>
+<td>모델 운영</td>
+</tr>
+<tr class="odd">
+<td><strong>SOC</strong></td>
+<td><strong>S</strong>ecurity <strong>O</strong>peration <strong>C</strong>enter</td>
+<td>보안 관제 센터</td>
+</tr>
+<tr class="even">
+<td><strong>RACI</strong></td>
+<td><strong>R</strong>esponsible · <strong>A</strong>ccountable · <strong>C</strong>onsulted · <strong>I</strong>nformed</td>
+<td>수행·최종책임·협의·통보</td>
+</tr>
+</tbody>
+</table>
+<h3 id="통제구조">통제·구조</h3>
+<table>
+<thead>
+<tr class="header">
+<th>약어</th>
+<th>원어</th>
+<th>우리말</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>PDP</strong></td>
+<td><strong>P</strong>olicy <strong>D</strong>ecision <strong>P</strong>oint</td>
+<td>정책 결정 지점 — 허용 여부를 판단하는 곳</td>
+</tr>
+<tr class="even">
+<td><strong>PEP</strong></td>
+<td><strong>P</strong>olicy <strong>E</strong>nforcement <strong>P</strong>oint</td>
+<td>정책 집행 지점 — 결정을 강제하는 곳</td>
+</tr>
+<tr class="odd">
+<td><strong>KRI</strong></td>
+<td><strong>K</strong>ey <strong>R</strong>isk <strong>I</strong>ndicator</td>
+<td>핵심 위험 지표</td>
+</tr>
+<tr class="even">
+<td><strong>DLP</strong></td>
+<td><strong>D</strong>ata <strong>L</strong>oss <strong>P</strong>revention</td>
+<td>데이터 유출 방지</td>
+</tr>
+<tr class="odd">
+<td><strong>E2E</strong></td>
+<td><strong>E</strong>nd-<strong>to</strong>-<strong>E</strong>nd</td>
+<td>종단 간 — 경계를 통과하는 전체 경로</td>
+</tr>
+<tr class="even">
+<td><strong>DoD</strong></td>
+<td><strong>D</strong>efinition <strong>o</strong>f <strong>D</strong>one</td>
+<td>완료 정의 (Scrum)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="프레임워크규제">프레임워크·규제</h3>
+<table>
+<thead>
+<tr class="header">
+<th>약어</th>
+<th>원어</th>
+<th>우리말</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>AI RMF</strong></td>
+<td>AI <strong>R</strong>isk <strong>M</strong>anagement <strong>F</strong>ramework (NIST)</td>
+<td>NIST AI 위험관리 프레임워크</td>
+</tr>
+<tr class="even">
+<td><strong>NIST</strong></td>
+<td><strong>N</strong>ational <strong>I</strong>nstitute of <strong>S</strong>tandards and <strong>T</strong>echnology</td>
+<td>미국 국립표준기술연구소</td>
+</tr>
+<tr class="odd">
+<td><strong>SRA</strong></td>
+<td><strong>S</strong>ecurity <strong>R</strong>eference <strong>A</strong>rchitecture (AWS)</td>
+<td>보안 참조 아키텍처</td>
+</tr>
+<tr class="even">
+<td><strong>RAI Standard</strong></td>
+<td><strong>R</strong>esponsible <strong>AI</strong> Standard (Microsoft)</td>
+<td>마이크로소프트 책임 있는 AI 표준</td>
+</tr>
+<tr class="odd">
+<td><strong>PIPA</strong></td>
+<td><strong>P</strong>ersonal <strong>I</strong>nformation <strong>P</strong>rotection <strong>A</strong>ct</td>
+<td>개인정보보호법</td>
+</tr>
+<tr class="even">
+<td><strong>EU AI Act</strong></td>
+<td>European Union <strong>A</strong>rtificial <strong>I</strong>ntelligence <strong>Act</strong></td>
+<td>EU 인공지능법</td>
+</tr>
+<tr class="odd">
+<td><strong>GPAI</strong></td>
+<td><strong>G</strong>eneral-<strong>P</strong>urpose <strong>AI</strong></td>
+<td>범용 인공지능</td>
+</tr>
+<tr class="even">
+<td><strong>PIPC</strong></td>
+<td><strong>P</strong>ersonal <strong>I</strong>nformation <strong>P</strong>rotection <strong>C</strong>ommission</td>
+<td>개인정보보호위원회</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ai기술">AI·기술</h3>
+<table>
+<thead>
+<tr class="header">
+<th>약어</th>
+<th>원어</th>
+<th>우리말</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>LLM</strong></td>
+<td><strong>L</strong>arge <strong>L</strong>anguage <strong>M</strong>odel</td>
+<td>대형 언어 모델</td>
+</tr>
+<tr class="even">
+<td><strong>RAG</strong></td>
+<td><strong>R</strong>etrieval-<strong>A</strong>ugmented <strong>G</strong>eneration</td>
+<td>검색 증강 생성</td>
+</tr>
+<tr class="odd">
+<td><strong>SaaS</strong></td>
+<td><strong>S</strong>oftware <strong>a</strong>s <strong>a</strong> <strong>S</strong>ervice</td>
+<td>서비스형 소프트웨어</td>
+</tr>
+<tr class="even">
+<td><strong>IAM</strong></td>
+<td><strong>I</strong>dentity and <strong>A</strong>ccess <strong>M</strong>anagement</td>
+<td>신원·접근 관리</td>
+</tr>
+<tr class="odd">
+<td><strong>PoC</strong></td>
+<td><strong>P</strong>roof <strong>o</strong>f <strong>C</strong>oncept</td>
+<td>개념 검증</td>
+</tr>
+<tr class="even">
+<td><strong>JD</strong></td>
+<td><strong>J</strong>ob <strong>D</strong>escription</td>
+<td>직무 기술서</td>
+</tr>
+</tbody>
+</table>
+<p><strong>풀어 말할 때 예시</strong></p>
+<blockquote>
+<p>"AI GRC — <strong>AI 거버넌스·위험·컴플라이언스</strong> 역할입니다." "PDP와 PEP, 즉 <strong>정책 결정 지점과 정책 집행 지점</strong>을 분리합니다." "TEVV — <strong>시험·평가·검증·확인</strong>을 담당하는 조직입니다."</p>
+</blockquote>
+<h2 id="0-기준선--이-인터뷰-전체의-기준">0. 기준선 — 이 인터뷰 전체의 기준</h2>
+<p><strong>모든 역할 질문은 이 사슬로 답한다.</strong> 아래 §1~§7은 이 사슬의 각 칸을 설명하는 것이다.</p>
+<pre><code>기준 (AI GRC · 내 자리)  →  구현 (Development)  →  판정 (Assurance)  →  수용 (Risk / Business)
+「기준 제공자」
+Staff AI Security Governance Engineer
+</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>분리선</th>
+<th>내용</th>
+<th>사이</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>①</strong></td>
+<td>만든 사람이 판정하지 않는다</td>
+<td>구현 ↔︎ Assurance</td>
+</tr>
+<tr class="even">
+<td><strong>②</strong></td>
+<td>판정한 사람이 위험을 수용하지 않는다</td>
+<td>Assurance ↔︎ 수용</td>
+</tr>
+<tr class="odd">
+<td><strong>③</strong></td>
+<td><strong>기준을 만든 사람이 그 기준으로 판정하지 않는다</strong></td>
+<td><strong>내 자리 ↔︎ Assurance</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Assurance = 실행 · 모니터링 · 시험 · 승인 · 감사.</strong> Control Owner · QE/TEVV · <strong>Release Approver</strong> · Internal Audit이 여기 있다.</p>
+<h3 id="내-자리--기준-제공자">내 자리 = 「기준 제공자」</h3>
+<p>지원 직함이 <code>Staff AI Security Governance **Engineer** (AI GRC)</code>다. **관리자가 아닌 개별 기여자(IC)**이고 <code>Governance</code>는 기준을 세우는 일이다. <strong>직함 자체가 승인자가 아니라 기준 제공자임을 말한다.</strong></p>
+<h3 id="내-산출물">내 산출물</h3>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>산출물</th>
+<th>받는 쪽</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>①</strong></td>
+<td><strong>개발팀용 기준과 가이드</strong></td>
+<td>Development · AI System Owner</td>
+<td><strong>규제 등의 requirement를 SW 구조에 넣을 수 있는 형태로</strong> 변환한 기준</td>
+</tr>
+<tr class="even">
+<td><strong>②</strong></td>
+<td><strong>Assurance용 구조 요건</strong></td>
+<td>Control Owner · QE/TEVV · Release Approver · Internal Audit</td>
+<td><strong>assessment 가능한 evidence</strong>와 <strong>audit 가능한 구조</strong>가 나오게 하는 요건</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 한 문장 — 이번 인터뷰에서 가장 먼저 말한다</strong></p>
+<blockquote>
+<p><strong>"제 자리는 「기준 제공자」입니다. 저는 승인하지 않습니다 — 승인이 가능하도록 만듭니다. 제 산출물은 결정이 아니라 결정의 전제입니다."</strong></p>
+</blockquote>
+<p><strong>「기준 제공자」라는 말을 쓰는 이유</strong> 지원 직함이 <code>Staff AI Security Governance **Engineer**</code>다. 관리자가 아니라 <strong>개별 기여자(IC)</strong> 포지션이고, <code>Governance</code>는 기준을 세우는 일이다. <strong>직함 자체가 승인자가 아니라 기준 제공자임을 말한다.</strong></p>
+<p><strong>근거는 운영모델 표의 구조다</strong> — <code>05_ai_lifecycle.md</code> §2의 11단계 표에서 <strong>AI GRC는 「최종 책임」 열에 한 번도 나오지 않는다.</strong> 수행 책임과 검토 열에만 나온다. 내 해석이 아니다.</p>
+<h3 id="자기-진단--내-poc는-이-기준선의-어디가-없는가">자기 진단 — 내 PoC는 이 기준선의 어디가 없는가</h3>
+<table>
+<thead>
+<tr class="header">
+<th>분리선</th>
+<th>내 PoC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>① 만든 사람 ↔︎ 판정</td>
+<td><strong>혼재.</strong> 내가 만들고 내가 E2E 테스트를 썼다. 다만 <strong>테스트가 실제로 내 구현의 실패를 잡아냈다</strong></td>
+</tr>
+<tr class="even">
+<td>② 판정 ↔︎ 수용</td>
+<td><strong>없음.</strong> residual risk를 수용할 주체가 정의되지 않았다</td>
+</tr>
+<tr class="odd">
+<td><strong>③ 기준 ↔︎ 판정</strong></td>
+<td><strong>없음. 내가 기준을 쓰고 내가 그 기준으로 판정했다</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>"1인 프로젝트라 세 분리선이 다 없습니다. <strong>특히 ③이 없습니다.</strong> 다만 ①의 대용으로 테스트를 썼고 그게 실제로 제 구현의 실패를 잡아냈습니다. <strong>혼자 하면서도 '내가 만든 걸 내가 판정하지 않는다'를 흉내낼 수 있는 방법이 테스트라고 생각합니다.</strong>"</p>
+</blockquote>
+<p>그림: <code>figures/baseline.svg</code> — <strong>이 한 장을 가장 먼저 띄운다.</strong></p>
+<hr />
+<h2 id="1-통제-원칙--다섯-계층">1. 통제 원칙 — 다섯 계층</h2>
+<blockquote>
+<p><strong>기준선 위치</strong> 이 계층은 <strong>구현</strong>의 형태다. 내가 산출물 ①로 개발팀에 넘기는 구조가 이것이다.</p>
+</blockquote>
+<p><strong>출처</strong> NIST AI RMF Profile, Target Control Architecture</p>
+<blockquote>
+<p><strong>Model proposes. Harness authorizes. Policy decides. Guardrail enforces. Evidence proves.</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>계층</th>
+<th>책임</th>
+<th>질문</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Model</strong></td>
+<td>action <strong>후보를 제안</strong>한다</td>
+<td>무엇을 하려 하는가</td>
+</tr>
+<tr class="even">
+<td><strong>Harness</strong></td>
+<td>출력을 구조화하고 실행 가능한 요청인지 확인한다</td>
+<td>형식적으로 유효한가</td>
+</tr>
+<tr class="odd">
+<td><strong>Policy</strong></td>
+<td>identity·tool·resource·parameter·context로 <strong>실행 여부를 결정</strong>한다</td>
+<td>허용되는가</td>
+</tr>
+<tr class="even">
+<td><strong>Guardrail</strong></td>
+<td>정책 결정을 <strong>runtime에 집행</strong>한다</td>
+<td>결정이 실제로 강제되는가</td>
+</tr>
+<tr class="odd">
+<td><strong>Evidence</strong></td>
+<td>입력·context·정책 버전·결정·승인·실행 결과를 <strong>연결해 기록</strong>한다</td>
+<td>나중에 증명할 수 있는가</td>
+</tr>
+<tr class="even">
+<td><strong>Assessment</strong></td>
+<td>위 다섯이 설계대로 작동하는지 <strong>독립 검증</strong>한다</td>
+<td>믿을 수 있는가</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 한 문장</strong></p>
+<blockquote>
+<p><strong>"핵심은 모델의 판단과 실행 권한을 분리하는 것입니다. 에이전트가 action을 제안할 수는 있지만, 실제 실행은 별도의 결정론적 authorization과 runtime 집행, 증거 체계를 통과해야 합니다."</strong></p>
+</blockquote>
+<hr />
+<h2 id="2-policy와-guardrail은-다르다">2. Policy와 Guardrail은 다르다</h2>
+<blockquote>
+<p><strong>기준선 위치</strong> <strong>Policy = 기준(내 자리) / Guardrail = 판정·집행 도구(Control Owner = Assurance).</strong> 이 절은 <strong>분리선 ③의 기술적 형태</strong>다 — 기준과 집행이 한 파일에 섞이면 ③이 무너진다.</p>
+</blockquote>
+<p><strong>이 절이 이번 인터뷰의 핵심이다.</strong> 둘 다 "차단"을 하지만 성질이 다르고, 구별하지 않으면 거버넌스가 성립하지 않는다.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Policy</strong></th>
+<th><strong>Guardrail</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>성격</td>
+<td>선언적 — 무엇이 허용되는가</td>
+<td>실행적 — 결정을 강제하는 기계</td>
+</tr>
+<tr class="even">
+<td>산출물</td>
+<td>결정 (허용 / 거부 / <strong>승인 요구</strong>)</td>
+<td>집행 결과 (차단됨 / 통과됨 / 대기)</td>
+</tr>
+<tr class="odd">
+<td>변경 절차</td>
+<td><strong>승인을 경유한다. 버전이 올라간다</strong></td>
+<td>배포로 바뀐다. 튜닝 대상이다</td>
+</tr>
+<tr class="even">
+<td>변경 주체</td>
+<td><strong>AI GRC</strong> (기준)</td>
+<td><strong>Control Owner</strong> · 개발팀 (튜닝)</td>
+</tr>
+<tr class="odd">
+<td>실패 양상</td>
+<td>정책이 <strong>없거나 모호함</strong></td>
+<td>정책은 있는데 <strong>집행되지 않음</strong></td>
+</tr>
+<tr class="even">
+<td>감사에서의 위치</td>
+<td>감사 <strong>기준</strong></td>
+<td>감사 <strong>대상</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="구별하는-질문-세-개">구별하는 질문 세 개</h3>
+<p>무엇이 정책이고 무엇이 가드레일인지 판단할 때 쓴다.</p>
+<ol>
+<li><strong>변경 시 governance approval이 필요한가?</strong> → 필요하면 <strong>Policy</strong></li>
+<li><strong>evidence가 해당 policy version에 binding되어야 하는가?</strong> → 그래야 하면 <strong>Policy</strong></li>
+<li><strong>Policy intent를 바꾸지 않고 구현을 교체·튜닝할 수 있는가?</strong> → 가능하면 <strong>Guardrail</strong></li>
+</ol>
+<h3 id="네-축으로-보면-차이가-선명해진다">네 축으로 보면 차이가 선명해진다</h3>
+<table>
+<thead>
+<tr class="header">
+<th>판단 기준</th>
+<th><strong>Policy</strong></th>
+<th><strong>Guardrail</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>변경 의미</strong></td>
+<td><strong>허용/금지/책임 경계가 바뀜</strong></td>
+<td>enforcement 방법·threshold·rule이 바뀜</td>
+</tr>
+<tr class="even">
+<td><strong>승인</strong></td>
+<td>원칙적으로 <strong>governance 승인 대상</strong></td>
+<td>정해진 <strong>운영 권한 내 tuning</strong> 가능</td>
+</tr>
+<tr class="odd">
+<td><strong>Evidence version</strong></td>
+<td><strong>Policy version과 연결 필요</strong></td>
+<td>rule/config version을 별도 기록 가능</td>
+</tr>
+<tr class="even">
+<td><strong>구현 변경</strong></td>
+<td><strong>Policy 자체는 유지</strong></td>
+<td>동일 Policy를 만족하면 <strong>교체·튜닝 가능</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>③이 가장 실용적인 판별식이다.</strong> 두 문장으로 정리한다.</p>
+<ul>
+<li><strong>"어떤 경계를 신뢰할 수 없다고 선언한다"</strong> → <strong>trust assumption 또는 normative requirement가 바뀌는 것</strong>이므로 <strong>Policy change에 가깝다</strong></li>
+<li><strong>"탐지 룰의 threshold·pattern·detector를 조정한다"</strong> → <strong>동일한 policy intent 안에서 enforcement를 조정하는 것</strong>이므로 <strong>Guardrail tuning에 가깝다</strong></li>
+</ul>
+<p><strong>자산으로 내려가면</strong> <code>tmac.yaml</code>의 <code>trust_level: untrusted / semi_trusted / trusted</code>가 문자 그대로 <strong>trust assumption의 선언</strong>이다. 그 값을 바꾸는 것과 그 아래 정규식·임계값을 바꾸는 것은 성질이 다르다.</p>
+<p><strong>"가깝다"라고 쓴 이유 — 그리고 애매할 때의 기본값 규칙</strong> 이 구분은 이진이 아니고 중간에 걸리는 항목이 있다. 그래서 판별식에 <strong>기본값 규칙</strong>을 함께 둔다.</p>
+<blockquote>
+<p><strong>애매하면 policy로 분류하고, 그중 어디까지를 운영 권한 내 tuning으로 위임할지 명시한다.</strong></p>
+</blockquote>
+<p>보수적으로 잡아 두고 위임 범위를 열어 주는 방향이 그 반대보다 안전하다. <strong>그리고 이 분류 규칙 자체가 policy다</strong> — 분류가 바뀌면 승인 절차가 바뀌기 때문이다.</p>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"탐지 룰 하나를 고치는 것과 어떤 경계를 신뢰할 수 없다고 선언하는 것은 둘 다 차단에 영향을 주지만 <strong>승인 절차가 달라야 합니다.</strong></p>
+<p>섞이면 두 문제가 생깁니다 — <strong>룰 튜닝마다 governance 승인을 받아야 하니 승인 절차가 형식화되고</strong>, 반대로 <strong>정책 버전이 튜닝마다 올라가서 evidence에 붙은 policy version이 의미를 잃습니다.</strong>"</p>
+</blockquote>
+<p><strong>원칙으로 말한다 — 내 PoC 얘기는 기술 인터뷰로</strong></p>
+<blockquote>
+<p>"<strong>하나의 정의에서 파생시키는 것과 하나의 파일에 섞어 두는 것은 다른 설계입니다.</strong> 섞이면 승인 절차가 하나로 묶여서, 룰 튜닝마다 승인을 받거나 정책 버전이 튜닝마다 올라갑니다. <strong>그래서 도입 첫 단계에서 이 구별 기준을 세워야 한다고 봅니다.</strong>"</p>
+</blockquote>
+<p><em>(내 PoC가 섞여 있다는 실측은 <code>../tech/</code> 자료다. 물으면 답하고, 먼저 꺼내지 않는다.)</em></p>
+<h3 id="pdp와-pep--결정과-집행이-구조적으로-분리된다">PDP와 PEP — 결정과 집행이 구조적으로 분리된다</h3>
+<p>Policy와 Guardrail의 구별은 <strong>시스템에서 두 지점으로 나타난다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>약어</th>
+<th>원어</th>
+<th>하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>PDP</strong></td>
+<td><strong>P</strong>olicy <strong>D</strong>ecision <strong>P</strong>oint</td>
+<td>정책을 평가해서 <strong><code>ALLOW</code> / <code>DENY</code> / <code>REQUIRE_APPROVAL</code> 같은 결정을 내리는 지점</strong></td>
+</tr>
+<tr class="even">
+<td><strong>PEP</strong></td>
+<td><strong>P</strong>olicy <strong>E</strong>nforcement <strong>P</strong>oint</td>
+<td>PDP의 결정을 <strong>실제 요청·행동 경로에서 강제(enforce)하는 지점</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>구조적으로는 보통 이 순서다</strong></p>
+<pre><code>Request / Action  →  PEP  →  PDP  →  Decision  →  PEP Enforcement
+</code></pre>
+<p><strong>PEP가 먼저 온다.</strong> 실행 경로에 앉아 있으면서 요청을 가로채고, PDP에 물어보고, 돌아온 결정을 강제한다.</p>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"정책과 가드레일의 구별이 시스템에서는 <strong>PDP와 PEP 두 지점으로 나타납니다.</strong> <strong>PDP는 정책을 평가해서 허용·거부·승인 요구를 결정하고, PEP는 그 결정을 실제 실행 경로에서 강제합니다.</strong> 순서는 <strong>요청이 먼저 PEP를 지나고, PEP가 PDP에 물어보고, 돌아온 결정을 PEP가 강제하는</strong> 형태입니다.</p>
+<p><strong>이 분리가 있어야 정책을 바꾸지 않고 집행 수단만 교체할 수 있습니다</strong> — 아까 세 번째 판별식이 그것입니다."</p>
+</blockquote>
+<p>→ <strong>구별 기준(§2 앞부분)이 왜 실무적으로 의미가 있는지</strong>를 이 구조가 보여준다. 분리되어 있지 않으면 정책을 고칠 때마다 집행 코드를 고쳐야 한다.</p>
+<hr />
+<h2 id="3-누가-무엇을-소유하는가--기준선의-역할-상세">3. 누가 무엇을 소유하는가 — 기준선의 역할 상세</h2>
+<p><strong>출처</strong> Microsoft Responsible AI Standard v2 운영모델 / NIST AI RMF Profile GOVERN — "Policy Owner, Implementation Owner, Assurance Owner 및 Risk Owner의 책임을 구분한다"</p>
+<table>
+<thead>
+<tr class="header">
+<th>진영</th>
+<th>역할</th>
+<th>Accountability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>기준</strong></td>
+<td><strong>AI GRC</strong> ← <strong>내 자리</strong></td>
+<td><strong>기준·분류·oversight·gap escalation 체계의 운영</strong></td>
+</tr>
+<tr class="even">
+<td><strong>설계</strong></td>
+<td><strong>Security Architecture</strong> (별도 팀)</td>
+<td><strong>내 요건을 보안 설계로 옮긴다</strong> — 「무엇을」이 아니라 「어떻게」</td>
+</tr>
+<tr class="odd">
+<td>구현</td>
+<td>Development Owner</td>
+<td>설계·코드·모델 통합 및 기술적 remediation</td>
+</tr>
+<tr class="even">
+<td>구현</td>
+<td>AI System Owner</td>
+<td>승인된 요구사항과 control을 충족하도록 운영</td>
+</tr>
+<tr class="odd">
+<td><strong>Assurance</strong></td>
+<td><strong>Control Owner</strong></td>
+<td>특정 control의 설계, 구현 상태 및 효과성 → <strong>실행·모니터링</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Assurance</strong></td>
+<td><strong>QE / TEVV Owner</strong></td>
+<td>평가 방법의 적절성과 시험 결과의 신뢰성 → <strong>시험</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Assurance</strong></td>
+<td><strong>Release Approver</strong></td>
+<td>evidence를 근거로 한 <strong>Go/No-go 결정</strong> → <strong>승인</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Assurance</strong></td>
+<td><strong>Internal Audit</strong></td>
+<td>설계된 대로 작동하는지 <strong>독립적으로 보증</strong> → <strong>감사</strong></td>
+</tr>
+<tr class="odd">
+<td>수용</td>
+<td><strong>Risk Owner</strong></td>
+<td>Residual risk의 수용·완화·회피·이전 결정</td>
+</tr>
+<tr class="even">
+<td>수용</td>
+<td>Business Owner</td>
+<td>AI use case의 필요성·편익·intended use 및 사업상 위험</td>
+</tr>
+</tbody>
+</table>
+<h3 id="이-표가-jd를-갈라준다">이 표가 JD를 갈라준다</h3>
+<table>
+<thead>
+<tr class="header">
+<th>JD 항목</th>
+<th>계층</th>
+<th>내 역할 위치</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1.1</strong> Framework &amp; Policy-as-Code</td>
+<td><strong>Policy</strong> 설계 + 개발팀 가이드</td>
+<td><strong>AI GRC</strong></td>
+</tr>
+<tr class="even">
+<td><strong>1.2</strong> Assurance Partnering</td>
+<td><strong>Assessment 기준 + evidence·audit 구조 요건</strong></td>
+<td>정의는 내가, <strong>실행·시험·승인·감사는 Assurance</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>1.3</strong> AI Risk Evaluation</td>
+<td>위협 식별 + 통제 선택</td>
+<td>AI GRC</td>
+</tr>
+<tr class="even">
+<td><strong>1.4</strong> Cross-Functional Alignment</td>
+<td>계층 간 역할 정렬</td>
+<td>조정</td>
+</tr>
+<tr class="odd">
+<td><strong>1.5</strong> Enterprise AI Policy Owner</td>
+<td>Policy·분류 기준 + Scope 판정 + escalation</td>
+<td><strong>AI GRC</strong> (승인은 Assurance)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p><strong>"저는 승인하지 않습니다. 승인이 가능하도록 만듭니다."</strong></p>
+<p>"제 자리는 <strong>AI GRC 하나</strong>입니다. 두 가지를 만듭니다 — <strong>규제 등의 requirement를 개발팀이 SW 구조에 넣을 수 있는 기준과 가이드</strong>, 그리고 <strong>그 구조에서 Assurance가 assessment할 evidence와 audit 가능한 형태가 나오게 하는 요건</strong>입니다.</p>
+<p><strong>실행·모니터링·감사·승인은 전부 Assurance입니다. Release Approver도 Assurance 쪽이고 제 자리가 아닙니다.</strong> JD 1.2가 'Assurance팀이 execute·monitor·audit한다'고 쓴 것과 같습니다.</p>
+<p>이건 제 해석이 아니라 <strong>운영모델 표의 구조입니다</strong> — AI GRC는 lifecycle 11단계 어디에서도 최종 책임 열에 나오지 않고 수행 책임과 검토 열에만 나옵니다.</p>
+<p><strong>제 산출물은 결정이 아니라 결정의 전제입니다.</strong> 제가 기준을 만들고 제가 그 기준으로 판정하면 기준 자체를 검증할 사람이 없어집니다."</p>
+</blockquote>
+<p><strong>내 산출물 두 가지</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>산출물</th>
+<th>받는 쪽</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>①</td>
+<td><strong>기준과 가이드</strong> — 규제 requirement가 SW 구조에 들어갈 수 있는 형태</td>
+<td><strong>1차: Security Architecture</strong> → 2차: Development · AI System Owner</td>
+</tr>
+<tr class="even">
+<td>②</td>
+<td><strong>Assurance용 구조 요건</strong> — assessment 가능한 evidence, audit 가능한 구조</td>
+<td>Control Owner · QE/TEVV · Release Approver · Internal Audit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>【미작성】 조직 실제 역할로의 매핑 — 조직 확인 후</strong></p>
+<blockquote>
+<p>MS Standard의 역할은 <strong>직책 이름이 아니라 책임의 종류</strong>다. 조직에 그 이름의 자리가 없어도 책임은 어딘가에 있어야 한다. <strong>Responsible AI Approver · Review Board · Release Approver · Internal Audit이 실제 어느 조직인지 확인한 뒤 배정</strong>한다. 지금 채우면 추측이 된다.</p>
+</blockquote>
+<blockquote>
+<p><strong>물으면</strong> — "<strong>MS 표준의 역할은 직책이 아니라 책임의 종류입니다.</strong> 조직 역할 구조를 확인한 뒤 맞추는 것이 도입 초기 작업이라고 봅니다."</p>
+</blockquote>
+<p>상세와 근거는 <code>06_ai_responsibility.md</code> §3·§4.</p>
+<hr />
+<h2 id="4-통제-범위--누가-무엇을-control하는가">4. 통제 범위 — 누가 무엇을 control하는가</h2>
+<blockquote>
+<p><strong>기준선 위치</strong> Scope 좌표는 <strong>기준</strong>이 정한다. 그 좌표에 따라 통제를 직접 구현할지(구현) 계약·증빙으로 요구할지가 갈리고, <strong>충족 판정은 Assurance</strong>다.</p>
+</blockquote>
+<p><strong>출처</strong> AWS SRA Generative AI Security Scoping Matrix</p>
+<p>도입 심사에서 <strong>가장 먼저 찍는 좌표</strong>다. 이 좌표가 우리가 통제할 수 있는 것과 계약으로 요구해야 하는 것을 가른다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Scope</th>
+<th>분류</th>
+<th>우리가 통제하는 것</th>
+<th>주 통제 초점</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1</strong></td>
+<td>Consumer app</td>
+<td>고객 데이터와 사용 방식만</td>
+<td><strong>acceptable-use 정책, 데이터 분류, DLP, 사용자 교육</strong></td>
+</tr>
+<tr class="even">
+<td><strong>2</strong></td>
+<td>Enterprise app</td>
+<td>+ user/access, 사용 정책</td>
+<td>+ <strong>계약·보증·opt-out·데이터 사용 조건</strong></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Pre-trained model</td>
+<td>+ application 전체</td>
+<td>+ application security, IAM/authorization, 입출력 검증, 로깅</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Fine-tuned model</td>
+<td>+ fine-tuning 데이터</td>
+<td>+ 학습데이터 보호, poisoning 방지</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Self-trained</td>
+<td>전부</td>
+<td>+ 모델 lifecycle 전체</td>
+</tr>
+</tbody>
+</table>
+<p><strong>핵심 문장</strong></p>
+<blockquote>
+<p><strong>"JD가 말하는 3rd-party AI SaaS는 보통 Scope 1~2이고, 제가 만들어 본 것은 Scope 3입니다.</strong> 이 차이가 제 공백의 정확한 이름입니다. Scope 3에서는 입출력 검증과 authorization을 직접 구현할 수 있었지만, Scope 1~2에서는 <strong>같은 통제를 계약과 증빙 요구로 대체</strong>해야 합니다. 묻는 항목은 같고 확보 수단이 다릅니다."</p>
+</blockquote>
+<hr />
+<h2 id="5-자율성-범위--에이전트에-어디까지-권한을-줄-것인가">5. 자율성 범위 — 에이전트에 어디까지 권한을 줄 것인가</h2>
+<blockquote>
+<p><strong>기준선 위치</strong> Scope를 선언하는 것은 <strong>기준</strong>. Scope가 요구하는 통제를 만드는 것은 <strong>구현</strong>. 그게 실제로 작동하는지는 <strong>판정</strong>. 남는 위험은 <strong>수용</strong>.</p>
+</blockquote>
+<p><strong>출처</strong> AWS SRA Agentic AI Security Scoping Matrix</p>
+<table>
+<thead>
+<tr class="header">
+<th>Scope</th>
+<th>분류</th>
+<th>사람의 위치</th>
+<th>필요한 통제</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>No Agency</td>
+<td>읽기 전용, 고정 워크플로</td>
+<td>워크플로 무결성, 입출력 검증, audit</td>
+</tr>
+<tr class="even">
+<td><strong>2</strong></td>
+<td>Prescribed Agency</td>
+<td><strong>결과 있는 action은 사람 승인 필수</strong></td>
+<td><strong>승인 워크플로 보호, 승인 우회 방지, approver 신원 검증, 승인 기록</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>3</strong></td>
+<td>Supervised Agency</td>
+<td><strong>사람이 시작하고 이후는 자율 실행</strong></td>
+<td><strong>runtime 모니터링, 권한 경계, scope creep 방지, kill switch</strong></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Full Agency</td>
+<td>스스로 시작, 지속 운영</td>
+<td>지속 검증, 자동 격리, 변조 불가 human override, fail-safe</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scope-3-이상에서-요구되는-구조">Scope 3 이상에서 요구되는 구조</h3>
+<pre><code>Primary Agent
+  ▼  action / telemetry
+Independent Monitor          ← primary agent와 분리되어야 한다
+  ▼
+Containment Controller       ← throttle · 권한 회수 · 세션 격리 · STOP
+  ▼
+Human Override               ← kill switch를 agent runtime 밖에 둔다
+</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>용어</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Agency boundary enforcement</td>
+<td>허용된 권한 범위 밖으로 나가지 못하도록 runtime에서 강제</td>
+</tr>
+<tr class="even">
+<td>Automated containment</td>
+<td>위반 감지 시 <strong>사람을 기다리지 않고</strong> 영향 범위 축소·격리</td>
+</tr>
+<tr class="odd">
+<td>Tamper-resistant human override</td>
+<td>사람이 강제 중지할 수 있고 <strong>에이전트가 그 수단을 수정·우회할 수 없다</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Fail-safe</strong></td>
+<td>통제 실패 시 위험한 action을 계속하는 대신 <strong>거부·중지·승인 요구</strong>로 전환</td>
+</tr>
+</tbody>
+</table>
+<p><strong>원칙으로 말한다 ★</strong></p>
+<blockquote>
+<p><strong>"Scope를 선언하는 것과 그 Scope가 요구하는 통제를 갖추는 것은 다른 일입니다.</strong> 그래서 <strong>Scope를 선언할 때 그 Scope의 필수 통제 목록을 기준에 같이 명시해야 한다고 봅니다.</strong> Scope 3이면 runtime 모니터링·권한 경계·kill switch·자동 격리가 필수 항목입니다.</p>
+<p>그리고 <strong>통제가 실패할 때의 기본 거동을 정책에서 선언해야 합니다.</strong> 탐지기가 응답하지 않을 때 통과시킬 것인지 거부할 것인지가 기준에 없으면 구현이 임의로 정하게 됩니다. AWS SRA 기준으로는 <strong>거부·중지·승인 요구</strong>로 가야 합니다.</p>
+<p>덧붙이면, 여기서 <strong>'안전하게'라는 말이 두 가지로 쓰입니다</strong> — 가용성 관점의 안전(통과)과 보안 관점의 안전(거부)은 반대 방향입니다. <strong>그래서 기준에는 거동을 명시적으로 적어야 합니다.</strong>"</p>
+</blockquote>
+<p>→ <strong>요건만 말한다.</strong> "실무에서 흔하다" 같은 일반화와 "코드에는 이렇게 적힌다" 같은 예시를 <strong>뺐다</strong> — 내 PoC 얘기로 들릴 여지를 없앤 것이다. 실측은 <code>../tech/</code>에 있고 <strong>물으면 그때 답한다</strong>(<code>00_note.md</code> Q4).</p>
+<hr />
+<h2 id="6-정책이-살아-있게-만드는-구조--기준-변경-게이트">6. 정책이 살아 있게 만드는 구조 — 기준 변경 게이트</h2>
+<blockquote>
+<p><strong>기준선 위치</strong> 이 루프의 게이트는 <strong>기준 변경 승인</strong>이고 그것만 내 자리다. <strong>시스템 배포 승인(Go/No-go)은 판정 = Assurance</strong>다. 두 승인을 섞으면 분리선 ③이 무너진다.</p>
+</blockquote>
+<p>정책은 한 번 쓰고 끝나지 않는다. 운영 결과가 기준을 다시 바꾸고, <strong>그 변경을 승인으로 통제</strong>한다.</p>
+<pre><code>[기준 정의]  정책 파일 (버전 관리)
+    ↓ 정책 설정 / 테스트 명세
+[집행]  Gateway  +  경계 테스트
+    ↓ 이벤트 (요청·응답·테스트 결과)
+[수집·평가]  위협 이벤트 저장소
+    ↓ 집계·분석
+[위험 산출]  빈도 · 심각도 · 오탐율 가중
+    ↓ 기준 변경 제안
+[기준 변경 승인]  ← ★ AI GRC 체계 운영 (중대 변경은 심의체계로 escalation)
+    ↓
+[기준 정의]로 복귀
+</code></pre>
+<p><strong>설계 판단 두 개</strong></p>
+<ol>
+<li><p><strong>자동 반영이 아니라 승인 경유.</strong> 자동으로 둘 수 있었지만 승인을 필수로 했다.</p>
+<blockquote>
+<p>"정책이 스스로 바뀌면 오너가 없어집니다. <strong>이 승인 단계가 오너십의 물리적 위치입니다.</strong>"</p>
+</blockquote></li>
+<li><p><strong>위험 계산에 오탐율을 넣었다.</strong></p>
+<blockquote>
+<p>"심각도와 빈도만 보면 오탐이 많은 룰도 위험해 보이고, 그러면 현장에서 통제를 꺼버립니다. <strong>끄지 않게 만드는 것까지가 정책 오너의 일이라고 봤습니다.</strong>"</p>
+</blockquote></li>
+</ol>
+<p><strong>두 종류의 승인을 구분한다 ★</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>무엇을 승인하나</th>
+<th>누가</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>기준(정책) 변경</strong> — 위 루프의 게이트</td>
+<td><strong>AI GRC</strong> — 기준 체계의 운영이 내 Accountability다. 중대 변경은 심의체계로 escalation</td>
+</tr>
+<tr class="even">
+<td><strong>시스템 배포</strong> — Go / No-go</td>
+<td><strong>Release Approver (Assurance)</strong> — evidence를 근거로 판정한다. <strong>내 자리가 아니다</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>"제가 승인하는 것은 <strong>기준의 변경</strong>입니다. <strong>시스템을 배포해도 되는지는 Assurance가 evidence를 보고 판정합니다.</strong> 이 둘을 섞으면, 제가 기준을 바꾸고 제가 그 기준으로 통과시키는 구조가 됩니다."</p>
+</blockquote>
+<p><strong>그리고 이게 maintain에 대한 답이다</strong></p>
+<blockquote>
+<p>"유지·운영을 사람이 반복하는 게 아니라 <strong>갱신 구조가 대신합니다.</strong> 운영 실행과 판정은 Assurance가 가져가고, 저는 <strong>그 판정이 가능한 기준과 증거 구조</strong>를 유지합니다."</p>
+</blockquote>
+<hr />
+<h2 id="7-규제를-게이트-조건으로">7. 규제를 게이트 조건으로</h2>
+<blockquote>
+<p><strong>기준선 위치</strong> 규제 요건을 <strong>기준</strong>으로 번역하는 것이 내 산출물 ①이다. 그 기준의 충족 여부는 <strong>판정</strong>, 잔여 위험 수용은 <strong>수용</strong>이다.</p>
+</blockquote>
+<p><strong>출처</strong> AI·개인정보 3대 법령 핵심 개념 요약</p>
+<table>
+<thead>
+<tr class="header">
+<th>축</th>
+<th>핵심 개념</th>
+<th>게이트 조건으로</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>PIPA</strong> 국외이전</td>
+<td>원칙 금지 + 법정 예외(동의·계약상 필요·인증·적정성 인정 등). <strong>해외에 보관만 해도 국외이전</strong> (서울 리전=해당 없음 / 도쿄·싱가포르=대상)</td>
+<td>추론·보관 리전 확인이 <strong>심사 1번 항목</strong></td>
+</tr>
+<tr class="even">
+<td><strong>PIPA</strong> 역외적용</td>
+<td>벤더 본사가 해외라도 한국 이용자 정보를 처리하면 <strong>벤더에게 직접 적용</strong></td>
+<td>벤더가 적용 대상임을 인지하는가</td>
+</tr>
+<tr class="odd">
+<td><strong>PIPA</strong> 자동화된 결정</td>
+<td>완전자동 결정 시 정보주체의 <strong>거부권·설명요구권</strong> 발생</td>
+<td>→ <strong>"승인 요구"라는 통제가 반드시 어휘에 있어야 하는 이유</strong></td>
+</tr>
+<tr class="even">
+<td><strong>EU AI Act</strong> 4단계</td>
+<td>금지 / 고위험(채용·신용·생체) / 제한적(챗봇·딥페이크) / 최소. <strong>같은 AI라도 용도로 등급이 갈린다</strong></td>
+<td>용도 선언 → 등급 → 의무 수준</td>
+</tr>
+<tr class="odd">
+<td><strong>EU AI Act</strong> 시행</td>
+<td>2025.2.2 금지 · 2025.8.2 범용AI · 2026.8.2 투명성 · 2027.12.2 고위험(단독형) · 2028.8.2 고위험(제품내장형)</td>
+<td>게이트 발효 시점</td>
+</tr>
+<tr class="even">
+<td><strong>AI기본법</strong></td>
+<td>고영향 / 생성형 / 대규모 분류. 사전 고지 + 결과물 표시 의무. 계도기간 중</td>
+<td>도입 심사의 분류 질문</td>
+</tr>
+</tbody>
+</table>
+<p><strong>연결 문장 — 개념이 통제로 이어지는 자리</strong></p>
+<blockquote>
+<p>"PIPA의 자동화된 결정 조항이 제 통제 어휘를 바꿨습니다. <strong>사람에 관한 결정을 완전자동으로 하면 거부권과 설명요구권이 발생하므로, 허용/차단 이진이 아니라 '사람 확인 경유'라는 조치가 반드시 있어야 합니다.</strong> 규제 요건이 정책 파일의 필드가 되는 지점입니다."</p>
+</blockquote>
+<p><strong>시행 일정에서 얻은 판단</strong></p>
+<blockquote>
+<p>"고위험 두 건은 연기된 일정입니다. <strong>규제 일정 자체가 움직이므로 게이트 조건을 날짜로 하드코딩하면 안 되고 버전 관리되는 정의에 둬야 합니다.</strong>"</p>
+</blockquote>
+<p><strong>답변 경계 (반드시 지킨다)</strong></p>
+<ul>
+<li>개념 수준(원칙-예외 구조, 역외적용, 리전 판정, 4단계, 3분류)까지 답한다.</li>
+<li><strong>조문 번호·과징금 수치는 "확인해서 회신하겠습니다."</strong></li>
+<li>PIPA 국외이전 예외를 <strong>"몇 가지"라고 개수로 말하지 않는다.</strong> 근거 문서가 4개 + "등"으로 적고 있어 전체 목록을 확인하지 않은 상태다.</li>
+</ul>
+<hr />
+<h2 id="8-nist-4-function과의-정합성-물으면">8. NIST 4 Function과의 정합성 (물으면)</h2>
+<blockquote>
+<p>GOVERN이 판단 기준을 정하고, MAP은 그 기준으로 위험 위치를 찾고, MEASURE는 위험의 크기와 통제 효과를 검증하며, MANAGE는 결과에 따라 위험을 처리하고 지속 추적한다.</p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>내 계층</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GOVERN</td>
+<td>경계·신뢰등급 선언, 승인 게이트, 규제 판정</td>
+</tr>
+<tr class="even">
+<td>MAP</td>
+<td>경계 식별 — 어디서 데이터가 명령으로 바뀌는가</td>
+</tr>
+<tr class="odd">
+<td>MEASURE</td>
+<td><strong>Assessment</strong> — 통제가 집행됐는지 독립 검증</td>
+</tr>
+<tr class="even">
+<td>MANAGE</td>
+<td>집행 + 기록 + 기준 재갱신</td>
+</tr>
+</tbody>
+</table>
+<h3 id="통제-목표-대비-내-위치-첫-90일-질문용">통제 목표 대비 내 위치 (첫 90일 질문용)</h3>
+<p>NIST Profile이 이 use case에 요구하는 통제 목표 7개에 내 자산을 대조한 결과다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>통제 목표</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>외부 데이터의 지시가 시스템 권한을 바꾸지 못하게 한다</td>
+<td><strong>부분</strong></td>
+</tr>
+<tr class="even">
+<td>모든 도구 action을 독립적으로 authorization한다</td>
+<td><strong>부분</strong></td>
+</tr>
+<tr class="odd">
+<td>실행 과정을 사후 추적할 수 있다 (출처→결정→정책→승인→action)</td>
+<td><strong>있음</strong></td>
+</tr>
+<tr class="even">
+<td>통제 변경 후 회귀를 방지한다</td>
+<td><strong>부분</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>고위험 action에 human approval을 요구한다</strong></td>
+<td>❌ <strong>없음</strong></td>
+</tr>
+<tr class="even">
+<td><strong>최소권한을 적용한다 (negative test 포함)</strong></td>
+<td>❌ <strong>미측정</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>개인정보 전달을 최소화한다 (masking)</strong></td>
+<td>❌ <strong>없음</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"<strong>1개는 있고 3개는 부분이고 3개가 없습니다.</strong> 없는 것이 human approval 증거, 최소권한 negative test, 개인정보 masking입니다. <strong>그 빈칸이 제 첫 90일 목록입니다.</strong>"</p>
+</blockquote>
+<hr />
+<h2 id="9-이-문서를-쓰는-규율">9. 이 문서를 쓰는 규율</h2>
+<ol>
+<li><strong>계층 어휘는 내가 만든 게 아니다.</strong> 출처를 밝힌다. "제가 프레임워크를 만들었다"고 말하지 않는다.</li>
+<li><strong>NIST Profile은 공식 NIST Profile이 아니다.</strong> 문서 자신이 use-case Target Profile이라고 밝히고 있다.</li>
+<li><strong>수치로 들어가지 않는다.</strong> 이번 인터뷰에서 실험 수치와 코드는 "기술 인터뷰에서 자세히 말씀드리겠다"로 넘긴다.</li>
+<li><strong>자기 진단 세 개는 먼저 꺼낸다</strong> — 정책·가드레일 혼재 / fail-open / Scope 3에 Scope 1 통제. 먼저 말하면 강점, 질문받고 답하면 약점이 된다.</li>
+<li><strong>역할 경계를 침범하지 않는다.</strong> Control Owner 실행과 Internal Audit 보증은 내 자리가 아니라고 명시한다.</li>
+</ol>
+</body>
+</html>

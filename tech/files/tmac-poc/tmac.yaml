@@ -1,0 +1,343 @@
+# =============================================================================
+# TMaC — Boundary Centric Threat Modeling as Code
+# 특허 기반 AI 보안 정책 파일
+# 이 파일이 Policy Gateway의 판단 기준이 됨
+# Closed Loop 갱신 시 이 파일이 자동 업데이트됨
+# =============================================================================
+
+apiVersion: tmac/v1
+kind: ThreatModel
+
+# 메타데이터 — 버전 관리 및 이력 추적용
+metadata:
+  name: hr-assistant-boundary-model
+  version: "1.1.0"
+  author: kim-jung-hyun
+
+# =============================================================================
+# BOUNDARIES — AI가 접근 가능한 영역 정의
+# trust_level: untrusted(외부입력) > semi_trusted(내부DB) > trusted(시스템)
+# =============================================================================
+boundaries:
+  - id: B-01
+    name: user_input
+    type: input
+    trust_level: untrusted        # 사용자 입력 — 항상 검증 필요
+
+  - id: B-02
+    name: rag_retrieval
+    type: data_access
+    trust_level: semi_trusted     # ChromaDB 검색 — 문서 접근 범위 제한
+
+  - id: B-03
+    name: tool_execution
+    type: execution
+    trust_level: trusted          # Agent Tool 실행 — Chain 누적 감시 대상
+    tools: [hr_query, mail_send, calendar_read]
+
+  - id: B-04
+    name: llm_inference
+    type: inference
+    trust_level: trusted          # Ollama 추론 경계
+
+  - id: B-05
+    name: data_store
+    type: data_access
+    trust_level: trusted
+    data_classification: confidential  # PostgreSQL HR DB — 최고 기밀
+
+# =============================================================================
+# THREATS — 위협 시나리오 정의
+# severity: critical > high > medium > low
+# response.action: block | sanitize_and_log | warn_and_confirm | throttle
+# =============================================================================
+threats:
+
+  # ---------------------------------------------------------------------------
+  # T-01: Prompt Injection — 가장 흔한 공격
+  # Direct Injection 전체 케이스 커버
+  # ---------------------------------------------------------------------------
+  - id: T-01
+    name: prompt_injection
+    boundary: B-01
+    severity: critical
+    category: input_manipulation
+    detection:
+      method: rule_engine         # 1차: 정규식 룰 매칭
+      rules:
+
+        # ── 기존 룰 ──────────────────────────────────────────────────────────
+        - id: R-T01-001
+          pattern: "이전.*(지시|명령|프롬프트).*무시"
+          confidence: 0.95
+          description: "한국어 지시 무시"
+
+        - id: R-T01-002
+          pattern: "ignore.*previous|disregard.*instructions"
+          confidence: 0.95
+          description: "영어 지시 무시"
+
+        - id: R-T01-003
+          pattern: "모든.*(직원|사원).*(급여|연봉|개인정보).*출력"
+          confidence: 0.90
+          description: "대량 데이터 탈취 시도"
+
+        - id: R-T01-004
+          pattern: "\\[SYSTEM\\]|<system>|###\\s*System"
+          confidence: 0.98
+          description: "일반 태그 삽입"
+
+        # ── 신규: llama3 특수 토큰 직접 삽입 ────────────────────────────────
+        - id: R-T01-005
+          pattern: "<\\|eot_id\\|>|<\\|start_header_id\\|>|<\\|end_header_id\\|>|<\\|begin_of_text\\|>"
+          confidence: 0.99
+          description: "llama3 특수 토큰 삽입 — Modelfile 템플릿 구조 직접 조작"
+
+        # ── 신규: assistant 역할 위조 ────────────────────────────────────────
+        - id: R-T01-006
+          pattern: "<\\|start_header_id\\|>\\s*assistant|<\\|start_header_id\\|>\\s*system"
+          confidence: 0.99
+          description: "assistant/system 헤더 위조 — 모델 역할 경계 침해"
+
+        # ── 신규: 역할 전환 시도 ─────────────────────────────────────────────
+        - id: R-T01-007
+          pattern: "너는.*이제|당신은.*사실|실제로.*너는|지금부터.*너는"
+          confidence: 0.85
+          description: "역할 전환 유도"
+
+        # ── 신규: 가상 시나리오 / 픽션 우회 ─────────────────────────────────
+        - id: R-T01-008
+          pattern: "소설.*속|가상.*시나리오|픽션으로|roleplay|역할극|캐릭터로.*말해|게임.*속.*캐릭터"
+          confidence: 0.75
+          description: "픽션/시나리오로 제약 우회 시도"
+
+        # ── 신규: 언어 전환 우회 ─────────────────────────────────────────────
+        - id: R-T01-009
+          pattern: "(?i)now\\s+speak|answer\\s+in\\s+english|respond\\s+in\\s+english"
+          confidence: 0.80
+          description: "언어 전환으로 한국어 룰 우회 시도"
+
+        # ── 신규: Base64 / URL 인코딩 우회 ───────────────────────────────────
+        - id: R-T01-010
+          pattern: "[A-Za-z0-9+/]{30,}={0,2}"
+          confidence: 0.70
+          description: "Base64 인코딩으로 패턴 숨기기 — 30자 이상 연속 Base64 문자열"
+
+        # ── 신규: 개행/공백 삽입으로 패턴 분리 우회 ─────────────────────────
+        - id: R-T01-011
+          pattern: "i\\s*g\\s*n\\s*o\\s*r\\s*e|무\\s*시\\s*하"
+          confidence: 0.85
+          description: "공백/개행 삽입으로 키워드 분리 우회"
+
+    response:
+      action: block               # 즉시 차단, LLM 호출 안 함
+      message: "요청이 보안 정책에 의해 차단되었습니다."
+      log_level: warning
+      store_event: true
+
+  # ---------------------------------------------------------------------------
+  # T-02: RAG Injection — ChromaDB 검색 경계 침해
+  # ---------------------------------------------------------------------------
+  - id: T-02
+    name: rag_injection
+    boundary: B-02
+    severity: high
+    category: data_boundary_violation
+    detection:
+      method: rule_engine
+      rules:
+        - id: R-T02-001
+          pattern: "\\$where|\\$regex|vector.*injection"
+          confidence: 0.92
+        - id: R-T02-002
+          pattern: "salary_band|performance_review_private"
+          confidence: 0.85
+        - id: R-T02-003
+          pattern: "전체.*직원|모든.*직원|직원.*전체|CSV.*출력|전체.*목록"
+          confidence: 0.88
+    response:
+      action: block
+      message: "문서 접근 권한이 없습니다."
+      log_level: warning
+      store_event: true
+
+  # ---------------------------------------------------------------------------
+  # T-04a: Single Tool Privilege Misuse
+  # ---------------------------------------------------------------------------
+  - id: T-04a
+    name: tool_privilege_misuse
+    boundary: B-03
+    severity: high
+    category: privilege_escalation
+    detection:
+      method: rule_engine
+      rules:
+        - id: R-T04a-001
+          pattern: "SELECT\\s+\\*\\s+FROM|DROP\\s+TABLE|DELETE\\s+FROM"
+          confidence: 0.95
+        - id: R-T04a-002
+          pattern: "전체.*직원.*정보|모든.*사원.*데이터|직원.*급여.*정보|급여.*전사.*메일"
+          confidence: 0.88
+    response:
+      action: block
+      message: "도구 사용 권한 초과가 감지되었습니다."
+      log_level: warning
+      store_event: true
+
+  # ---------------------------------------------------------------------------
+  # T-04b: Tool Chain Escalation — 특허 핵심 시나리오
+  # ---------------------------------------------------------------------------
+  - id: T-04b
+    name: tool_chain_escalation
+    boundary: B-03
+    severity: critical
+    category: chain_escalation
+    detection:
+      method: chain_accumulator
+      window_size: 5
+      risk_threshold: 0.75
+      tool_risk_scores:
+        calendar_read: 0.10
+        hr_db_query: 0.30
+        mail_send_self: 0.20
+        mail_send_team: 0.50
+        mail_send_all: 0.70
+        file_write: 0.70
+        file_delete: 0.95
+      escalation_patterns:
+        - id: EP-001
+          chain: ["hr_db_query", "mail_send_all"]
+          cumulative_threshold: 0.60
+        - id: EP-002
+          chain: ["calendar_read", "hr_db_query", "mail_send_all"]
+          cumulative_threshold: 0.75
+    response:
+      action: block
+      message: "도구 연쇄 실행이 보안 경계를 초과했습니다."
+      log_level: critical
+      store_event: true
+      proposed_update: true
+
+  # ---------------------------------------------------------------------------
+  # T-04c: Tool Result Injection — 간접 Prompt Injection
+  # ---------------------------------------------------------------------------
+  - id: T-04c
+    name: tool_result_injection
+    boundary: B-03
+    severity: high
+    category: indirect_injection
+    detection:
+      method: rule_engine
+      rules:
+        - id: R-T04c-001
+          pattern: "IGNORE PREVIOUS|NOW YOU ARE|<\\/?(system|instruction)>"
+          confidence: 0.93
+    response:
+      action: sanitize_and_log
+      message: "도구 결과에서 비정상 패턴이 감지되었습니다."
+      log_level: warning
+      store_event: true
+
+  # ---------------------------------------------------------------------------
+  # T-04d: Scope Creep
+  # ---------------------------------------------------------------------------
+  - id: T-04d
+    name: scope_creep
+    boundary: B-03
+    severity: high
+    category: scope_violation
+    detection:
+      method: intent_mismatch
+      read_tools: [hr_db_query, calendar_read, file_read]
+      write_tools: [mail_send_all, mail_send_team, file_write, file_delete]
+      initial_intent_keywords: ["알려줘", "조회해줘", "보여줘", "확인해줘"]
+    response:
+      action: warn_and_confirm
+      message: "읽기 요청에서 쓰기 작업이 감지되었습니다."
+      log_level: warning
+      store_event: true
+
+  # ---------------------------------------------------------------------------
+  # T-06: Jailbreak — 페르소나 전환으로 제약 우회
+  # ---------------------------------------------------------------------------
+  - id: T-06
+    name: jailbreak_persona
+    boundary: B-01
+    severity: high
+    category: jailbreak
+    detection:
+      method: rule_engine
+      rules:
+        - id: R-T06-001
+          pattern: "DAN|Do Anything Now|제약.*없는.*AI"
+          confidence: 0.90
+        - id: R-T06-002
+          pattern: "너는 이제부터.*AI가 아니야|규칙.*없는.*모드"
+          confidence: 0.88
+        - id: R-T06-003
+          pattern: "나는.*관리자|관리자.*권한|admin.*권한|권한으로.*수정"
+          confidence: 0.87
+    response:
+      action: block
+      message: "역할 전환 요청은 허용되지 않습니다."
+      log_level: warning
+      store_event: true
+
+  # ---------------------------------------------------------------------------
+  # T-08: Prompt Flooding
+  # ---------------------------------------------------------------------------
+  - id: T-08
+    name: prompt_flooding
+    boundary: B-01
+    severity: medium
+    category: availability
+    detection:
+      method: rate_limiter
+      rules:
+        - id: R-T08-001
+          max_requests_per_minute: 20
+        - id: R-T08-002
+          max_message_length: 4000
+    response:
+      action: throttle
+      message: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."
+      log_level: info
+      store_event: false
+
+# =============================================================================
+# POLICIES
+# =============================================================================
+policies:
+  default_action: allow
+  audit_all_requests: true
+  llama_guard_enabled: false
+  risk_score_threshold: 0.75
+  closed_loop:
+    mode: semi_auto
+    approval_required: true
+    proposed_yaml_path: "/data/proposed_update.yaml"
+
+# =============================================================================
+# RISK CALCULATOR
+# =============================================================================
+risk_calculator:
+  enabled: true
+  evaluation_window_hours: 24
+  weight:
+    frequency: 0.30
+    severity: 0.50
+    false_positive_rate: 0.20
+  auto_propose_threshold: 5
+
+# =============================================================================
+# EVAL STORE
+# =============================================================================
+eval_store:
+  backend: postgresql
+  table: threat_events
+  retention_days: 90
+  index_fields:
+    - threat_id
+    - session_id
+    - created_at
+    - severity

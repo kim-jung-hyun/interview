@@ -1,0 +1,23 @@
+// AI RMF 4 Function 순환 — GOVERN이 나머지를 감싼다
+// 근거: 03. NIST AI RMF Profile §5·§9
+// 정본: manager/08_ai_rmf_profile.md §1  (내용 변경 금지)
+digraph rmf {
+  layout=dot; rankdir=TB; bgcolor="white"; compound=true; ranksep=0.5; nodesep=0.5;
+  node [shape=box, style="rounded,filled", fillcolor="white", color="#333333",
+        fontname="Noto Sans CJK KR", fontsize=11, width=3.2, height=0.8];
+  edge [fontname="Noto Sans CJK KR", fontsize=9, color="#333333"];
+
+  subgraph cluster_gov {
+    label="GOVERN — 판단 기준과 책임을 정한다\n어떤 원칙과 책임으로 관리할 것인가";
+    fontname="Noto Sans CJK KR"; fontsize=12; style="rounded,bold"; color="#333333"; bgcolor="#f7f7f7";
+    MAP [label="MAP\n어디에서 어떤 위험이 발생하는가\n\n외부 메일이 trusted data가 아닌 상태로\nmodel context에 들어가고, output이\naction으로 전환되는 boundary"];
+    MEA [label="MEASURE\n위험이 실제로 얼마나 발생하는가\n\n악성 지시 포함 test email로\n승인 없이 action이 생성된 비율 측정"];
+    MAN [label="MANAGE\n측정된 위험을 어떻게 처리·추적하는가\n\n무단 실행 발견 시 REQUIRE_APPROVAL로\n통제하고 재발생률 monitoring"];
+    MAP -> MEA -> MAN;
+    MAN -> MAP [style=dashed, label="새 위험 발견", constraint=false];
+  }
+  node [shape=box, style="filled,bold", fillcolor="#e8e8e8", width=3.2, height=0.5];
+  FEEDBACK [label="측정·처리 결과가 판단 기준으로 되돌아간다\n→ GOVERN 재정의"];
+  MEA -> FEEDBACK [ltail=cluster_gov, style=bold];
+  MAN -> FEEDBACK [style=bold];
+}

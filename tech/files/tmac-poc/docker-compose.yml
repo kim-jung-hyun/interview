@@ -1,0 +1,224 @@
+# =============================================================================
+# TMaC PoC — Docker Compose
+# 네트워크 분리: internal(AI내부) / external(공격테스트)
+# 기동 순서: infra → ollama → ollama-init → target-ai → streamlit
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — Threat Evaluation Store
+  # threat_events 테이블: Gateway가 탐지한 모든 위협 이벤트 저장
+  # ---------------------------------------------------------------------------
+  postgres-store:
+    image: postgres:15-alpine
+    container_name: tmac-postgres-store
+    environment:
+      POSTGRES_DB: ${STORE_DB:-tmac_store}
+      POSTGRES_USER: ${STORE_USER:-tmac}
+      POSTGRES_PASSWORD: ${STORE_PASSWORD:-tmac1234}
+    volumes:
+      - postgres_store_data:/var/lib/postgresql/data
+      - ./db/init_store.sql:/docker-entrypoint-initdb.d/init.sql  # 스키마 자동 초기화
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${STORE_USER:-tmac}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — Mock HR DB
+  # 직원 8명 더미 데이터, hr_tool.py 가 이 DB에 접근
+  # ---------------------------------------------------------------------------
+  postgres-hr:
+    image: postgres:15-alpine
+    container_name: tmac-postgres-hr
+    environment:
+      POSTGRES_DB: ${HR_DB:-hr_db}
+      POSTGRES_USER: ${HR_USER:-hr_admin}
+      POSTGRES_PASSWORD: ${HR_PASSWORD:-hr1234}
+    volumes:
+      - postgres_hr_data:/var/lib/postgresql/data
+      - ./db/init_hr.sql:/docker-entrypoint-initdb.d/init.sql     # HR 더미 데이터 자동 삽입
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${HR_USER:-hr_admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # ChromaDB — RAG Vector Store
+  # HR 정책 문서 임베딩 저장, rag/loader.py 가 초기화
+  # ---------------------------------------------------------------------------
+  chromadb:
+    image: chromadb/chroma:0.5.23
+    container_name: tmac-chromadb
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # MailHog — Mock SMTP 서버
+  # mail_tool.py 가 발송, http://localhost:8025 에서 수신 확인
+  # T-04b 데모 시 전체 메일 발송 차단 확인용
+  # ---------------------------------------------------------------------------
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: tmac-mailhog
+    ports:
+      - "8025:8025"   # Web UI
+      - "1025:1025"   # SMTP
+    networks:
+      - internal
+      - external
+
+  # ---------------------------------------------------------------------------
+  # Ollama — LLM 서버 (CPU-only)
+  # llama3.2:3b 모델, 완전 CPU 연산 (i7-1260P / 16GB RAM)
+  # 첫 기동 후 ollama-init 으로 모델 pull 필요
+  # ---------------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:0.3.14
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    container_name: tmac-ollama
+    volumes:
+      - ollama_data:/root/.ollama    # 모델 캐시 — pull 후 재사용
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s              # 초기 로딩 대기
+
+  # ---------------------------------------------------------------------------
+  # Ollama Init — 모델 pull 1회 실행 후 종료
+  # llama3.2:3b 약 2GB, CPU-only 환경에서 3~5분 소요
+  # ---------------------------------------------------------------------------
+  ollama-init:
+    image: ollama/ollama:0.3.14
+    container_name: tmac-ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        echo '[tmac] Pulling llama3.2:3b ...' &&
+        OLLAMA_HOST=http://ollama:11434 ollama pull llama3.2:3b &&
+        echo '[tmac] Model pull complete.'
+      "
+    networks:
+      - internal
+    restart: "no"                    # 1회 실행 후 종료
+
+  # ---------------------------------------------------------------------------
+  # Target AI — FastAPI + LangChain + RAG + Agent
+  # TMaC Policy Gateway 미들웨어 탑재
+  # SCENARIO 환경변수로 공격/정상 모드 전환 (D-4 결정)
+  # ---------------------------------------------------------------------------
+  target-ai:
+    build:
+      context: ./target
+      dockerfile: Dockerfile
+    container_name: tmac-target-ai
+    environment:
+      # DB 연결
+      STORE_DSN: postgresql://tmac:tmac1234@postgres-store:5432/tmac_store
+      HR_DSN: postgresql://hr_admin:hr1234@postgres-hr:5432/hr_db
+      # Ollama
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      # ChromaDB
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: 8000
+      # MailHog
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      # TMaC 정책 파일 경로
+      TMAC_YAML_PATH: /app/tmac.yaml
+      # 시나리오 전환 (normal | attack_t01 | attack_t04b)
+      SCENARIO: ${SCENARIO:-normal}
+    volumes:
+      - ./tmac.yaml:/app/tmac.yaml          # 정책 파일 실시간 마운트 (Closed Loop)
+      - ./data:/data                         # proposed_update.yaml 저장
+    ports:
+      - "8000:8000"
+    networks:
+      - internal
+      - external
+    depends_on:
+      postgres-store:
+        condition: service_healthy
+      postgres-hr:
+        condition: service_healthy
+      chromadb:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Streamlit — TMaC Manager UI
+  # 탭: Chat / Threat Events / Risk Dashboard / TMaC Manager(diff+승인)
+  # ---------------------------------------------------------------------------
+  streamlit:
+    build:
+      context: ./streamlit
+      dockerfile: Dockerfile
+    container_name: tmac-streamlit
+    environment:
+      TARGET_AI_URL: http://target-ai:8000
+      STORE_DSN: postgresql://tmac:tmac1234@postgres-store:5432/tmac_store
+    volumes:
+      - ./tmac.yaml:/app/tmac.yaml          # 현재 정책 파일
+      - ./data:/data                         # proposed_update.yaml 읽기
+    ports:
+      - "8501:8501"
+    networks:
+      - internal
+      - external
+    depends_on:
+      - target-ai
+
+# =============================================================================
+# NETWORKS — Internal / External 분리 (D-9 결정)
+# internal: AI 내부 통신 (DB, Ollama, ChromaDB)
+# external: 외부 공격 테스트 트래픽 (Garak, PyRIT, k6)
+# =============================================================================
+networks:
+  internal:
+    driver: bridge
+    internal: true                  # 외부 인터넷 차단
+  external:
+    driver: bridge
+
+# =============================================================================
+# VOLUMES — 데이터 영속성
+# =============================================================================
+volumes:
+  postgres_store_data:
+  postgres_hr_data:
+  chroma_data:
+  ollama_data:                      # 모델 캐시 (2GB+) — 재pull 방지

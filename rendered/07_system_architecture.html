@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>07_system_architecture</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">07_system_architecture</h1>
+</header>
+<h1 id="ai-system-구조--model--harness--policy--evidence--test--e2e-test">AI System 구조 — Model · Harness · Policy · Evidence · Test · E2E Test</h1>
+<blockquote>
+<p><strong>책임 체계(<code>06_ai_responsibility.md</code>)를 실제로 작동시키기 위한 시스템 구조다.</strong> 역할이 책임을 지려면 <strong>그 역할이 붙잡을 지점이 시스템에 있어야 한다.</strong> 이 문서는 그 지점을 정의한다.</p>
+<p><strong>근거</strong> <code>03. NIST AI RMF Profile</code> §6 Target Control Architecture · §7 Validation Criteria / <code>04. AWS SRA Agentic AI Scoping Matrix</code> / <code>06. 특허</code> 구성요소</p>
+<p><strong>기준선</strong> <code>02_structure.md</code> §0. 이 문서는 **내 산출물 ①(개발팀용 기준이 SW 구조로 들어간 형태)**과 **②(Assurance가 쓸 evidence·audit 구조)**를 동시에 정의한다.</p>
+<p>그림: <code>figures/architecture.dot</code> / <code>.svg</code></p>
+</blockquote>
+<hr />
+<h2 id="1-통제-원칙">1. 통제 원칙</h2>
+<p><strong>출처 원문</strong> — NIST Profile §6</p>
+<blockquote>
+<p><strong>Model proposes. Harness authorizes. Policy decides. Guardrail enforces. Evidence proves.</strong></p>
+</blockquote>
+<p>여기에 검증 계층을 더하면 <strong>Test verifies.</strong></p>
+<p><strong>핵심</strong> 모델의 <strong>판단</strong>과 실행 <strong>권한</strong>을 분리한다.</p>
+<blockquote>
+<p>(원문) AI assistant가 action을 제안할 수는 있지만, 실제 tool 실행은 별도의 deterministic authorization, runtime enforcement 및 evidence 체계를 통과해야 한다.</p>
+</blockquote>
+<hr />
+<h2 id="2-여섯-구성요소">2. 여섯 구성요소</h2>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>요소</th>
+<th>책임</th>
+<th>질문</th>
+<th>이 요소가 없으면</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><strong>Model</strong></td>
+<td>사용자 요청과 데이터로 action <strong>후보를 제안</strong>한다</td>
+<td>무엇을 하려 하는가</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><strong>Harness</strong></td>
+<td>모델 출력을 <strong>구조화</strong>하고 실행 가능한 action인지 확인한다 (schema·parameter 검증)</td>
+<td>형식적으로 유효한가</td>
+<td>모델 출력이 검증 없이 tool call로 파싱된다 — <strong>데이터가 명령으로 바뀌는 지점이 무방비</strong></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><strong>Policy (PDP)</strong> — Policy Decision Point</td>
+<td>정책을 평가해 <strong><code>ALLOW</code>/<code>DENY</code>/<code>REQUIRE_APPROVAL</code> 결정을 내린다</strong></td>
+<td>허용되는가</td>
+<td>판단 기준이 코드에 흩어진다. 누가 바꿨는지 알 수 없다</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><strong>Guardrail (PEP)</strong> — Policy Enforcement Point</td>
+<td>그 결정을 <strong>실제 요청·행동 경로에서 강제(enforce)한다</strong></td>
+<td>결정이 실제로 강제되는가</td>
+<td>정책이 문서로만 존재한다</td>
+</tr>
+</tbody>
+</table>
+<p><strong>PDP와 PEP의 실제 호출 순서</strong></p>
+<pre><code>Request / Action  →  PEP  →  PDP  →  Decision  →  PEP Enforcement
+</code></pre>
+<p><strong>PEP가 먼저 온다.</strong> 실행 경로에 앉아 요청을 가로채고, PDP에 물어보고, 돌아온 결정을 강제한다. §3의 선형 그림은 이걸 펼쳐 놓은 것이다 — <strong>결정이 집행보다 먼저라는 뜻이지, PDP가 경로에 앉아 있다는 뜻은 아니다.</strong> | 5 | <strong>Evidence</strong> | 입력·context·<strong>정책 버전</strong>·결정·승인·실행 결과를 <strong>연결해 기록</strong>한다 | 나중에 증명할 수 있는가 | 무엇이 왜 일어났는지 사후에 알 수 없다 | | 6 | <strong>Test / E2E Test</strong> | 위 다섯이 <strong>설계대로 작동하는지 검증</strong>한다 | 믿을 수 있는가 | <strong>선언과 집행의 차이를 구조적으로 볼 수 없다</strong> |</p>
+<h3 id="policy와-guardrail은-왜-따로인가">Policy와 Guardrail은 왜 따로인가</h3>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Policy (PDP)</strong></th>
+<th><strong>Guardrail (PEP)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>성격</td>
+<td>선언적 — 무엇이 허용되는가</td>
+<td>실행적 — 결정을 강제하는 기계</td>
+</tr>
+<tr class="even">
+<td>산출물</td>
+<td><strong>ALLOW / DENY / REQUIRE_APPROVAL</strong></td>
+<td>집행 결과</td>
+</tr>
+<tr class="odd">
+<td>변경 절차</td>
+<td><strong>승인 경유. 버전이 올라간다</strong></td>
+<td>배포로 바뀐다. 튜닝 대상</td>
+</tr>
+<tr class="even">
+<td>소유 역할</td>
+<td><strong>AI GRC</strong> ← 내 자리</td>
+<td><strong>Control Owner</strong> (Assurance)</td>
+</tr>
+<tr class="odd">
+<td>실패 양상</td>
+<td>정책이 없거나 모호함</td>
+<td>정책은 있는데 <strong>집행되지 않거나 우회됨</strong></td>
+</tr>
+<tr class="even">
+<td>감사 위치</td>
+<td>감사 <strong>기준</strong></td>
+<td>감사 <strong>대상</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>구별 질문 세 개</strong> ① <strong>변경 시 governance approval이 필요한가</strong> — 필요하면 Policy ② <strong>evidence가 해당 policy version에 binding되어야 하는가</strong> — 그래야 하면 Policy ③ <strong>동일한 policy intent를 유지한 채 enforcement implementation을 교체·튜닝할 수 있는가</strong> — 가능하면 Guardrail</p>
+<p><strong>③의 적용 — 두 문장</strong></p>
+<ul>
+<li>"어떤 경계를 신뢰할 수 없다고 선언한다" → <strong>trust assumption / normative requirement 변경</strong> → <strong>Policy change에 가깝다</strong></li>
+<li>"탐지 룰의 threshold·pattern·detector를 조정한다" → <strong>동일 policy intent 내 enforcement 조정</strong> → <strong>Guardrail tuning에 근접하다</strong></li>
+</ul>
+<p><strong>기본값 규칙</strong> 중간에 걸리는 항목은 <strong>policy로 분류하고 운영 권한 내 tuning 위임 범위를 명시한다.</strong> 이 분류 규칙 자체도 policy다.</p>
+<h3 id="test와-e2e-test는-왜-따로인가">Test와 E2E Test는 왜 따로인가</h3>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Test</strong></th>
+<th><strong>E2E Test</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>대상</td>
+<td>요소 하나</td>
+<td><strong>경계를 통과하는 전체 경로</strong></td>
+</tr>
+<tr class="even">
+<td>확인하는 것</td>
+<td>이 요소가 명세대로 동작하는가</td>
+<td><strong>선언된 통제가 실제로 집행되는가</strong></td>
+</tr>
+<tr class="odd">
+<td>예</td>
+<td>정책 파서가 YAML을 맞게 읽는가</td>
+<td>악성 입력이 실제 tool 실행까지 도달하지 못하는가</td>
+</tr>
+<tr class="even">
+<td>잡아내는 것</td>
+<td>구현 버그</td>
+<td><strong>정의와 집행의 불일치 (drift)</strong></td>
+</tr>
+<tr class="odd">
+<td>소유 역할</td>
+<td>Development Owner</td>
+<td><strong>QE / TEVV Owner</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것 — 이 구분이 이 문서의 핵심이다</strong></p>
+<blockquote>
+<p>"<strong>단위 테스트는 '내가 만든 게 내 명세대로 동작하는가'를 봅니다. E2E 테스트는 '내 명세가 실제로 집행되는가'를 봅니다.</strong> 둘은 다른 질문이고, 거버넌스가 필요한 건 후자입니다.</p>
+<p>제 PoC에서 실제로 그 차이가 나왔습니다 — <strong>경계 테스트 154건 중 13건이 실패했고, 그중 11건이 '정책 파일에는 선언됐는데 집행이 어긋난' 경우</strong>였습니다. 특히 8건은 차단은 되는데 위협 ID가 다르게 기록돼서 <strong>로그만 보면 정상으로 보입니다.</strong> 단위 테스트로는 절대 안 잡힙니다."</p>
+</blockquote>
+<hr />
+<h2 id="3-실행-흐름">3. 실행 흐름</h2>
+<pre><code>Identity / Session Context
+    ↓
+외부 데이터 수집 (검색 · RAG · 도구 결과)     ← 신뢰 등급을 여기서 선언한다
+    ↓
+Prompt / Context Builder
+    ↓
+┌──────────────┐
+│  1 MODEL     │  action 후보 제안
+└──────┬───────┘
+       ↓  Action Candidate
+┌──────────────┐
+│  2 HARNESS   │  schema · parameter 검증
+└──────┬───────┘
+       ↓  구조화된 실행 요청
+┌──────────────┐
+│  3 POLICY    │  ── ALLOW ──────────────┐
+│     (PDP)    │  ── DENY ───────────▶ 거부 + 기록
+└──────┬───────┘  ── REQUIRE_APPROVAL ─▶ 사람 승인 ──┐
+       │                                             │
+       ↓◀────────────────────────────────────────────┘
+┌──────────────┐
+│  4 GUARDRAIL │  runtime 집행
+│     (PEP)    │
+└──────┬───────┘
+       ↓
+  Tool 실행 (메일 · 캘린더 · DB)
+       ↓
+┌──────────────────────────────────────────────┐
+│  5 EVIDENCE — 위 모든 단계에서 기록이 내려온다      │
+│  입력 · context · 정책버전 · 결정 · 승인 · 실행결과  │
+└──────────────────────────────────────────────┘
+       ╎
+┌──────────────────────────────────────────────┐
+│  6 TEST / E2E TEST — 위 경로를 주입해 검증한다     │
+└──────────────────────────────────────────────┘
+</code></pre>
+<h3 id="결정이-세-갈래인-것이-중요하다">결정이 세 갈래인 것이 중요하다</h3>
+<p><code>ALLOW</code> / <code>DENY</code> / <strong><code>REQUIRE_APPROVAL</code></strong></p>
+<p><strong>왜 세 번째가 필요한가 — 규제가 요구한다</strong></p>
+<blockquote>
+<p>"PIPA의 <strong>자동화된 결정</strong> 조항 때문입니다. 완전자동 시스템이 개인의 권리·의무에 중대한 영향을 주는 결정을 하면 정보주체에게 <strong>거부권과 설명요구권</strong>이 발생합니다.</p>
+<p>그래서 통제 어휘가 허용·차단 이진이면 안 됩니다. <strong>'사람 확인을 경유한다'는 결정이 반드시 있어야 하고, 그게 시스템 구조의 분기로 존재해야 합니다.</strong> 규제 요건이 아키텍처의 분기가 되는 지점입니다."</p>
+</blockquote>
+<p>그리고 <strong>AWS Agentic Scope 2</strong>가 요구하는 것이 정확히 이 분기다 — <code>결과 있는 action은 사람 승인 필수</code>, 그리고 <strong>승인 기록·approver 신원 검증·승인 우회 방지</strong>.</p>
+<hr />
+<h2 id="4-실패했을-때--fail-safe">4. 실패했을 때 — Fail-safe</h2>
+<p><strong>출처 원문</strong> — AWS SRA Agentic Scoping Matrix</p>
+<blockquote>
+<p>Fail-safe = control failure나 불확실한 상태가 발생하면 위험한 action을 계속하는 대신 <strong>안전한 상태로 전환</strong>하는 것. 예: authorization service 응답 없음 → action 실행이 아니라 <strong>DENY / STOP / REQUIRE APPROVAL</strong></p>
+</blockquote>
+<h3 id="scope-3-이상에서-요구되는-추가-구조">Scope 3 이상에서 요구되는 추가 구조</h3>
+<pre><code>Primary Agent
+    ↓ action / telemetry
+Independent Monitor       ← primary agent와 **분리**되어야 한다
+    ↓
+Containment Controller    ← throttle · 권한 회수 · 세션 격리 · STOP
+    ↓
+Human Override            ← kill switch를 **agent runtime 밖**에 둔다
+</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>용어</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Agency boundary enforcement</td>
+<td>허용된 권한 범위 밖으로 못 나가게 runtime에서 강제</td>
+</tr>
+<tr class="even">
+<td>Automated containment</td>
+<td>위반 감지 시 <strong>사람을 기다리지 않고</strong> 영향 범위 축소·격리</td>
+</tr>
+<tr class="odd">
+<td>Tamper-resistant human override</td>
+<td>사람이 강제 중지할 수 있고 <strong>에이전트가 그 수단을 수정·우회할 수 없다</strong></td>
+</tr>
+<tr class="even">
+<td>Fail-safe</td>
+<td>통제 실패 시 <strong>거부·중지·승인 요구</strong>로 전환</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"<strong>Independent Monitor가 감시 대상과 분리되어야 하고, kill switch가 agent runtime 밖에 있어야 합니다.</strong> 정책 파일 안의 룰로는 이게 충족되지 않습니다 — 에이전트가 도는 프로세스 안에 있으면 그 프로세스가 죽을 때 감시도 같이 죽습니다."</p>
+</blockquote>
+<hr />
+<h2 id="5-내-poc를-이-구조에-대조하면--자기-진단">5. 내 PoC를 이 구조에 대조하면 — 자기 진단</h2>
+<table>
+<thead>
+<tr class="header">
+<th>요소</th>
+<th>내 구현</th>
+<th>판정</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1 Model</td>
+<td>Ollama 온프레미스 / Bedrock</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td><strong>2 Harness</strong></td>
+<td><strong>없다.</strong> schema·parameter 검증 단계가 없다</td>
+<td>❌ <strong>내가 설계한 검증 실험의 결함 V4가 정확히 이것</strong> — 모델 출력을 검증 없이 tool call로 파싱</td>
+</tr>
+<tr class="odd">
+<td>3 Policy</td>
+<td>경계 선언 + 위협별 조치 4종 (<code>block</code>/<code>sanitize</code>/<code>warn_and_confirm</code>/<code>throttle</code>)</td>
+<td>⚠️ <strong>가드레일과 한 파일에 섞여 있다</strong></td>
+</tr>
+<tr class="even">
+<td>4 Guardrail</td>
+<td>Gateway가 정책 파일을 읽어 집행</td>
+<td>⚠️ 평가 <strong>순서</strong>가 정책이 아니라 구현에 암묵적으로 있다</td>
+</tr>
+<tr class="odd">
+<td>5 Evidence</td>
+<td>위협 이벤트 저장소 (위협ID·세션·조치·시각·심각도, 보관 90일)</td>
+<td>⚠️ <strong>정책 버전이 증거에 연결되지 않는다</strong></td>
+</tr>
+<tr class="even">
+<td>6 Test / E2E</td>
+<td>E2E 경계 테스트 154건</td>
+<td>✅ <strong>작동했다</strong> — 13건 실패를 잡아냈다</td>
+</tr>
+<tr class="odd">
+<td><strong>Fail-safe</strong></td>
+<td><strong>fail-open이다.</strong> 기본 조치가 <code>allow</code>, 탐지기 장애 시 통과</td>
+<td>❌ <strong>보안 fail-safe와 반대 방향</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Human Override / Containment</strong></td>
+<td><strong>없다</strong></td>
+<td>❌ Scope 3 시스템인데 Scope 1 수준 통제</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것 (먼저 꺼낸다)</strong></p>
+<blockquote>
+<p>"이 구조에 제 것을 대조하면 <strong>두 개가 없고 세 개가 어긋납니다.</strong></p>
+<p>없는 것은 <strong>Harness와 안전장치</strong>입니다. 모델 출력의 스키마 검증 단계가 없고, kill switch와 자동 격리가 없습니다.</p>
+<p>어긋난 것은 <strong>정책과 가드레일이 한 파일에 있다는 것, 평가 순서가 정책이 아니라 구현에 있다는 것, 그리고 정책 버전이 증거에 연결되지 않는다는 것</strong>입니다.</p>
+<p>그리고 가장 심각한 건 <strong>fail-open</strong>입니다. 탐지기가 죽으면 통과시킵니다. 코드 주석에는 '안전하게 통과'라고 써 있는데 <strong>그건 가용성 관점의 안전이고 보안 관점에서는 반대입니다.</strong> 용어를 혼동하면 이런 설계가 나온다는 사례로 쓰고 있습니다."</p>
+</blockquote>
+<p>→ <strong>이 대답이 "프레임을 읽기만 한 것"과 "자기 것에 적용해 본 것"을 가른다.</strong></p>
+<hr />
+<h2 id="6-역할이-붙잡는-지점--구조와-책임의-연결">6. 역할이 붙잡는 지점 — 구조와 책임의 연결</h2>
+<p>이 문서가 <code>06_ai_responsibility.md</code>를 위해 존재하는 이유다. <strong>역할이 책임을 지려면 붙잡을 지점이 있어야 한다.</strong></p>
+<p><strong>기준선 순서로 읽는다.</strong> 기준 → 구현 → 판정 → 수용.</p>
+<table>
+<thead>
+<tr class="header">
+<th>기준선</th>
+<th>역할</th>
+<th>시스템에서 붙잡는 지점</th>
+<th>그 지점이 없으면</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>기준</strong></td>
+<td><strong>AI GRC ← 내 자리</strong></td>
+<td><strong>Policy 정의 + 개발팀 가이드 + evidence·audit 구조 요건</strong></td>
+<td>기준이 코드에 흩어지고, <strong>Assurance가 쓸 증거가 안 나온다</strong></td>
+</tr>
+<tr class="even">
+<td><strong>구현</strong></td>
+<td>Development Owner</td>
+<td><strong>Model · Harness · Guardrail 구현</strong></td>
+<td>기준이 문서에만 남는다</td>
+</tr>
+<tr class="odd">
+<td><strong>구현</strong></td>
+<td>AI System Owner</td>
+<td>승인된 통제로 운영</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>판정</strong></td>
+<td><strong>Control Owner</strong></td>
+<td><strong>Guardrail 실행·모니터링과 그 효과성</strong></td>
+<td>통제가 있다고 말할 근거가 없다</td>
+</tr>
+<tr class="odd">
+<td><strong>판정</strong></td>
+<td><strong>QE / TEVV Owner</strong></td>
+<td><strong>Test / E2E Test와 그 결과</strong></td>
+<td>"충족됐다"를 확인할 방법이 없다</td>
+</tr>
+<tr class="even">
+<td><strong>판정</strong></td>
+<td><strong>Release Approver</strong></td>
+<td><strong>Evidence + Test 결과 → Go/No-go</strong></td>
+<td>승인이 서명이 된다</td>
+</tr>
+<tr class="odd">
+<td><strong>판정</strong></td>
+<td><strong>Internal Audit</strong></td>
+<td><strong>Evidence의 무결성과 정책 버전 이력</strong></td>
+<td>독립 검증 대상이 없다</td>
+</tr>
+<tr class="even">
+<td><strong>수용</strong></td>
+<td><strong>Risk Owner</strong></td>
+<td><strong>Evidence에 남은 residual risk</strong></td>
+<td>무엇을 수용하는지 모르고 수용한다</td>
+</tr>
+<tr class="odd">
+<td><strong>수용</strong></td>
+<td>Business Owner</td>
+<td>사업상 위험 판단</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것 — 이 문서를 닫는 문장</strong></p>
+<blockquote>
+<p>"<strong>책임 체계와 시스템 구조는 따로 만들 수 없다고 생각합니다.</strong> Release Approver가 Go/No-go를 하려면 근거가 증거로 남아 있어야 하고, Internal Audit이 독립 검증을 하려면 정책 버전 이력이 있어야 합니다.</p>
+<p>반대로 말하면 <strong>시스템에 붙잡을 지점이 없는 역할은 문서상의 역할입니다.</strong></p>
+<p><strong>그래서 제 일이 기준을 쓰는 것에서 끝나지 않습니다.</strong> 기준을 쓰고, 그게 SW 구조에 들어가게 개발팀을 가이드하고, <strong>그 구조에서 Assurance가 판정할 증거가 나오게</strong> 하는 것까지입니다. 여기까지가 분리선 ③을 성립시키는 조건입니다."</p>
+</blockquote>
+<hr />
+<h2 id="7-nist-통제-목표-대비-현재-위치">7. NIST 통제 목표 대비 현재 위치</h2>
+<p><strong>출처 원문</strong> — NIST Profile §7 (Control Objective / Validation Criteria / Required Evidence)</p>
+<table>
+<thead>
+<tr class="header">
+<th>통제 목표</th>
+<th>필요 증적</th>
+<th>내 상태</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>외부 데이터의 지시가 시스템 권한을 바꾸지 못하게 한다</td>
+<td>공격 test 결과, action trace, 최종 decision</td>
+<td><strong>부분</strong></td>
+</tr>
+<tr class="even">
+<td>모든 tool action을 독립적으로 authorization한다</td>
+<td>Gateway log, policy decision, execution log</td>
+<td><strong>부분</strong> — 귀속 오류 존재</td>
+</tr>
+<tr class="odd">
+<td>실행 과정을 사후 추적할 수 있다 (출처→결정→정책→승인→action)</td>
+<td>run ID, source reference, <strong>policy version</strong>, action evidence</td>
+<td><strong>부분</strong> — 정책 버전 미연결</td>
+</tr>
+<tr class="even">
+<td>통제 변경 후 회귀를 방지한다</td>
+<td>versioned test suite, regression report</td>
+<td><strong>부분</strong> — 테스트가 정책 버전과 미연동</td>
+</tr>
+<tr class="odd">
+<td><strong>고위험 action에 human approval을 요구한다</strong></td>
+<td>Approval request, <strong>approver identity</strong>, 승인 전 미실행</td>
+<td>❌ <strong>없음</strong></td>
+</tr>
+<tr class="even">
+<td><strong>최소권한을 적용한다</strong></td>
+<td>IAM/OAuth scope, access policy, <strong>negative test</strong></td>
+<td>❌ <strong>미측정</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>개인정보 전달을 최소화한다</strong></td>
+<td>data-flow diagram, request log, <strong>masking 결과</strong></td>
+<td>❌ <strong>없음</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것 — 첫 90일 질문에 그대로 쓴다</strong></p>
+<blockquote>
+<p>"<strong>4개는 부분이고 3개가 없습니다.</strong> 없는 것이 human approval 증거, 최소권한 negative test, 개인정보 masking입니다.</p>
+<p>그리고 <strong>'부분'인 네 개의 공통 원인이 하나입니다 — 정책 버전이 증거에 연결되지 않는다는 것.</strong> 정책 버전이 없으면 '그때 어떤 기준으로 허용했는가'를 답할 수 없고, 회귀 테스트도 무엇에 대한 회귀인지 알 수 없습니다. <strong>그 한 줄을 먼저 연결하겠습니다.</strong>"</p>
+</blockquote>
+</body>
+</html>

@@ -1,0 +1,45 @@
+// AI adoption lifecycle 전체 — 11단계 + 승인 게이트 4개 + 되돌아가는 경로
+// 근거: 05. Microsoft Responsible AI Standard v2 운영모델
+// 정본: manager/05_ai_lifecycle.md §2·§3·§4  (내용 변경 금지, 배치만 조정)
+digraph lifecycle {
+  rankdir=TB; splines=polyline; nodesep=0.35; ranksep=0.45; bgcolor="white";
+  node [shape=box, style="rounded,filled", fillcolor="white", color="#333333",
+        fontname="Noto Sans CJK KR", fontsize=11, height=0.5, width=2.6];
+  edge [color="#333333", fontname="Noto Sans CJK KR", fontsize=9];
+
+  // 승인 게이트 — 굵은 테두리 + 회색 채움
+  node [style="filled,bold", fillcolor="#e8e8e8", shape=box];
+  G1 [label="G1  Sensitive·Restricted\nUse 분류\n【Responsible AI Approver】"];
+  G2 [label="G2  Reviewer 승인\n【Release Approver / Risk Owner】"];
+  G3 [label="G3  중대 residual risk 수용\n【Business Sponsor / Management】"];
+  G4 [label="G4  재평가 · 중단\n【Review Board】"];
+
+  // 일반 단계
+  node [style="rounded,filled", fillcolor="white"];
+  S1  [label="1  AI use case 식별\n(Business Owner)"];
+  S2  [label="2  Impact Assessment\n(Business / System Owner)"];
+  S4  [label="4  Responsible Release\nCriteria 정의\n(AI System Owner)"];
+  S5  [label="5  Pre-release Evaluation\n(QE / TEVV)"];
+  S7  [label="7  Deployment\n(Service / System Owner)"];
+  S8  [label="8  Ongoing Monitoring\n(Service / System Owner)"];
+  S9  [label="9  Gap Management\n(Control Owner)"];
+
+  node [shape=note, style=filled, fillcolor="#f5f5f5"];
+  A11 [label="11  Lifecycle 전체 Audit\n(Internal Audit)\n— 독립 검증"];
+
+  S1 -> S2 -> G1 -> S4 -> S5 -> G2 -> S7 -> S8 -> S9;
+
+  // 되돌아가는 경로
+  S9 -> S4 [label="기준이 틀렸을 때", style=dashed, constraint=false];
+  S9 -> S5 [label="검증 재수행", style=dashed, constraint=false];
+  S9 -> S2 [label="위험 판단 변경", style=dashed, constraint=false];
+  S9 -> G3 [label="중대 위험"];
+  G3 -> G4;
+  G4 -> S1 [label="use case 재정의 / 종료", style=dashed, constraint=false];
+
+  // Audit은 전체를 가로지른다
+  A11 -> S2 [style=dotted, arrowhead=open, label="주기적"];
+  A11 -> G2 [style=dotted, arrowhead=open];
+  A11 -> S9 [style=dotted, arrowhead=open];
+  // A11 rank 강제 제거 — G1이 1단계 앞으로 올라가 순서가 어긋났다
+}

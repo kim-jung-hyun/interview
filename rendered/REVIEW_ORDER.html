@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>검토 순서</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">검토 순서</h1>
+</header>
+<h1 id="검토-순서--산출물-확인용">검토 순서 — 산출물 확인용</h1>
+<p><strong>위치</strong> <code>/home/jhkim/project/interview/REVIEW_ORDER.md</code> <strong>렌더</strong> <code>rendered/ALL.html</code> (브라우저) 또는 VS Code에서 <code>Ctrl+Shift+V</code></p>
+<hr />
+<h1 id="-지금-확인이-필요한-것--7개">★ 지금 확인이 필요한 것 — 7개</h1>
+<p>앞선 5개 결정은 반영 완료. <strong>아래 7개만 답해 주시면 됩니다.</strong> 각 항목에 <strong>왜 제가 정할 수 없는지</strong>를 적었습니다.</p>
+<h2 id="a-사실-확인--제가-알-수-없는-정보-3개">A. 사실 확인 — 제가 알 수 없는 정보 (3개)</h2>
+<h3 id="-a-1-조직에-이-직책이-있습니까">☐ A-1. 조직에 이 직책이 있습니까</h3>
+<p><code>manager/06_ai_responsibility.md</code> §3 MS→애자일 매핑</p>
+<table>
+<thead>
+<tr class="header">
+<th>직책</th>
+<th>있는가</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Responsible AI Approver</strong> (3단계 분류 최종 책임)</td>
+<td>☐ 있다 ☐ 없다 ☐ 모른다</td>
+</tr>
+<tr class="even">
+<td><strong>Review Board</strong> (3·10단계 검토)</td>
+<td>☐ 있다 ☐ 없다 ☐ 모른다</td>
+</tr>
+<tr class="odd">
+<td><strong>Release Approver</strong> (6단계 승인)</td>
+<td>☐ 있다 ☐ 없다 ☐ 모른다</td>
+</tr>
+<tr class="even">
+<td><strong>Internal Audit</strong> (11단계)</td>
+<td>☐ 있다 ☐ 없다 ☐ 모른다</td>
+</tr>
+</tbody>
+</table>
+<p><strong>왜 필요한가</strong> 있으면 <code>§1~§3</code>(MS 역할)로 말하고, 없으면 <code>§4</code>(애자일 역할)로 말해야 한다. <strong>지금은 둘 다 써 놨고 어느 쪽이 주 서술인지 못 정했다.</strong></p>
+<h3 id="-a-2-jd의-실제-포지션-명칭">☐ A-2. JD의 실제 포지션 명칭</h3>
+<p><code>manager/02_structure.md</code> 약어표 · 전 문서의 "AI GRC"</p>
+<p>제가 MS 문서 용어 <strong>AI GRC</strong>를 그대로 쓰고 있습니다. JD 직함이 다르면(예: <code>AI Security &amp; Risk Management</code>) 전 문서의 호칭을 바꿔야 합니다.</p>
+<p>→ <strong>JD에 적힌 포지션 이름 한 줄</strong>만 알려주세요.</p>
+<h3 id="-a-3-로저스-사례가-사실과-맞습니까">☐ A-3. 로저스 사례가 사실과 맞습니까</h3>
+<p><code>manager/00_note.md</code> §1.4</p>
+<p>제가 짧은 메모로 재구성했습니다. <strong>틀린 디테일이 있으면 고쳐야 합니다.</strong></p>
+<ul>
+<li>반대한 조직을 **"개발팀 Protocol 파트"**로 썼습니다 — 맞습니까</li>
+<li><strong>"시료를 미리 현지에 보낸다"</strong> — 시료가 맞습니까 (샘플/평가기)</li>
+<li><strong>"현지 검증팀"</strong> — 로저스 측입니까, 우리 측 현지 인력입니까</li>
+<li>결과를 **"기본 동작이 된다는 것을 먼저 확인"**으로 썼습니다 — 맞습니까</li>
+</ul>
+<h2 id="b-판단-확인--제-제안이-조직에서-작동하는가-3개">B. 판단 확인 — 제 제안이 조직에서 작동하는가 (3개)</h2>
+<h3 id="-b-1-애자일-역할-배정--제가-가장-확신-없음">☐ B-1. 애자일 역할 배정 ★ 제가 가장 확신 없음</h3>
+<p><code>06</code> §3</p>
+<table>
+<thead>
+<tr class="header">
+<th>MS 역할</th>
+<th>제가 배정한 애자일 역할</th>
+<th>동의</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Release Approver</td>
+<td><strong>PO</strong>(일반 release) / <strong>Business Sponsor</strong>(고위험·예외)</td>
+<td>☐</td>
+</tr>
+<tr class="even">
+<td>Risk Owner</td>
+<td><strong>Business Sponsor / Management</strong></td>
+<td>☐</td>
+</tr>
+<tr class="odd">
+<td>Control Owner</td>
+<td><strong>Developers + 운영/MLOps</strong></td>
+<td>☐</td>
+</tr>
+<tr class="even">
+<td>AI GRC (내 자리)</td>
+<td><strong>공유 지원조직일 수 있음</strong></td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+<p><strong>왜 필요한가</strong> 일반 release를 PO가 판단하게 한 것이 제 배정이다. 조직이 그렇지 않으면 인터뷰에서 어긋난다.</p>
+<h3 id="-b-2-도입-심사-15개-항목">☐ B-2. 도입 심사 15개 항목</h3>
+<p><code>manager/04_adoption_gate.md</code> §4</p>
+<p>전부 제 제안입니다. <strong>빠진 항목이 있는지</strong>, 15번(필요 통제 지정)이 출구로 맞는지.</p>
+<h3 id="-b-3-escalation-경계-6개">☐ B-3. escalation 경계 6개</h3>
+<p><code>06</code> §5</p>
+<p>6개 기준은 원문이지만 **"일반 gap은 팀 백로그에서 끝낸다"**는 경계선은 제 판단입니다. 조직에서 이 선이 작동하겠습니까.</p>
+<h2 id="c-결과-확인--지난-결정이-제대로-반영됐는가-1개">C. 결과 확인 — 지난 결정이 제대로 반영됐는가 (1개)</h2>
+<h3 id="-c-1-원칙-서술이-남에게-요구할-기준으로-읽히는가-">☐ C-1. 원칙 서술이 「남에게 요구할 기준」으로 읽히는가 ★</h3>
+<p><code>manager/02_structure.md</code> §2·§5 / <code>00_note.md</code> 1.1·1.2·Q4</p>
+<p>fail-open과 수치를 tech로 옮기면서 <strong>원칙만 남겼습니다.</strong> 그 문장들이</p>
+<ul>
+<li>자기 변명처럼 들리지 않고</li>
+<li><strong>남에게 요구할 통제 기준</strong>으로 읽히는지</li>
+</ul>
+<p>→ 해당 부분 소리 내어 한 번 읽어 보시고 어색하면 말씀해 주세요.</p>
+<hr />
+<h2 id="반영-완료--더-안-봐도-됩니다">반영 완료 — 더 안 봐도 됩니다</h2>
+<table>
+<thead>
+<tr class="header">
+<th>지난 결정</th>
+<th>반영</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>자기 결함 3개 → tech로</td>
+<td>MI는 <strong>원칙만</strong>, 내 PoC 실측은 물으면만 (<code>02</code> §2·§5, <code>00_note</code> Q3·Q4)</td>
+</tr>
+<tr class="even">
+<td>수치 → tech로</td>
+<td>MI에서 <strong>건수·비율 전부 제거</strong> (<code>00_note</code> §1.2, <code>03_demo</code>, <code>README</code>)</td>
+</tr>
+<tr class="odd">
+<td>애자일 매핑 필요</td>
+<td><code>06</code> §3 <strong>MS→애자일 매핑 표 신설</strong> + 기준선 애자일 버전</td>
+</tr>
+<tr class="even">
+<td>약어 풀어쓰기</td>
+<td><code>02</code> <strong>약어 절 신설</strong>(30개) + <code>00_note</code> 규율 7번(자주 쓰는 6개)</td>
+</tr>
+<tr class="odd">
+<td>문서 8개 유지</td>
+<td>그대로</td>
+</tr>
+<tr class="even">
+<td>1.4 마찰 장면</td>
+<td><strong>로저스 사례</strong> 반영 + 게이트 운영 방식으로 연결</td>
+</tr>
+<tr class="odd">
+<td>RACI 기호 표</td>
+<td><strong>역할별 말 표로 교체</strong> (기호 제거)</td>
+</tr>
+<tr class="even">
+<td>검토 매핑 오류 5건</td>
+<td>역할 기준으로 뒤집으며 <strong>해소</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="0단계--기준선-확정-5분--여기가-틀리면-전부-다시">0단계 — 기준선 확정 (5분) ★ 여기가 틀리면 전부 다시</h2>
+<table>
+<thead>
+<tr class="header">
+<th>볼 것</th>
+<th>확인 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>manager/02_structure.md</code> <strong>§0</strong></td>
+<td>네 진영과 분리선 3개가 내 생각과 같은가</td>
+</tr>
+<tr class="even">
+<td><code>manager/figures/baseline.svg</code></td>
+<td>한 장으로 봤을 때 말이 되는가</td>
+</tr>
+<tr class="odd">
+<td><code>manager/06_ai_responsibility.md</code> <strong>§3</strong></td>
+<td>위의 근거 서술이 맞는가</td>
+</tr>
+</tbody>
+</table>
+<p><strong>확정해야 할 것 한 문장</strong> — "저는 승인하지 않습니다. 승인이 가능하도록 만듭니다."</p>
+<p><strong>이미 두 번 정정한 부분이다.</strong> ① Release Approver를 내 자리로 잡았던 것 → Assurance로 정정 ② 승인을 내 일로 잡았던 것 → 기준 변경 승인만 내 일로 한정.</p>
+<p>⚠️ <strong>여기가 바뀌면 8개 문서 전부 영향</strong>을 받는다. 다른 단계보다 먼저 끝내야 한다.</p>
+<hr />
+<h2 id="1단계--내가-추론제안한-것-20분--오류-위험-최고">1단계 — 내가 추론·제안한 것 (20분) ★ 오류 위험 최고</h2>
+<p><strong>근거 문서에 없고 내가 만든 것이다.</strong> 표기상 <code>Proposed Operating Model</code>로 적혀 있지만, <strong>타당한지는 본인이 판단해야 한다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>볼 것</th>
+<th>무엇이 내 추론인가</th>
+<th>특히 볼 것</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1-1</td>
+<td><code>06_ai_responsibility.md</code> §2 <strong>역할별 표</strong></td>
+<td>원문을 역할 기준으로 뒤집은 것 (기호 없음)</td>
+<td><strong>AI GRC 행의 「최종 책임」이 비어 있는 것</strong>이 맞는가</td>
+</tr>
+<tr class="even">
+<td>1-2</td>
+<td><code>06</code> §3 <strong>MS 역할 → 애자일 역할 매핑</strong> ★</td>
+<td><strong>Control Owner·Risk Owner·Release Approver를 애자일 역할로 옮긴 것</strong></td>
+<td>Release Approver = PO(일반)/Business Sponsor(고위험) 배정이 맞는가. AI GRC를 공유 지원조직으로 본 것이 맞는가</td>
+</tr>
+<tr class="odd">
+<td>1-3</td>
+<td><code>04_adoption_gate.md</code> §1 <strong>경계→벤더 질의 변환</strong></td>
+<td>B-01~B-05를 벤더 질의로 옮긴 것</td>
+<td>실제 벤더에게 물을 수 있는 질문인가</td>
+</tr>
+<tr class="even">
+<td>1-4</td>
+<td><code>04_adoption_gate.md</code> §4 <strong>15개 항목 서식</strong></td>
+<td>항목 구성과 순서 전부</td>
+<td>빠진 항목이 없는가. 15번(필요 통제 지정)이 출구로 맞는가</td>
+</tr>
+<tr class="odd">
+<td>1-5</td>
+<td><code>06</code> §5 <strong>escalation 6기준</strong></td>
+<td>6개는 원문. <strong>조직에 어떻게 적용할지는 내 제안</strong></td>
+<td>"일반 gap은 팀 백로그" 경계가 현실적인가</td>
+</tr>
+<tr class="even">
+<td>1-6</td>
+<td><code>05_ai_lifecycle.md</code> §4 <strong>되돌아가는 경로</strong></td>
+<td>Gap Management → 4·5·2단계 배정</td>
+<td>실제로 그 세 갈래가 맞는가</td>
+</tr>
+<tr class="odd">
+<td>1-7</td>
+<td><code>02_structure.md</code> §2 <strong>기본값 규칙</strong></td>
+<td>"애매하면 policy로 분류"</td>
+<td>이 기본값이 조직에서 작동하겠는가</td>
+</tr>
+</tbody>
+</table>
+<p><strong>틀린 게 있으면 말씀해 주시면 고칩니다.</strong> 여기는 근거 문서로 검증할 수 없는 영역이다.</p>
+<hr />
+<h2 id="2단계--원문-전사-대조-15분-눈으로-11-비교">2단계 — 원문 전사 대조 (15분) 눈으로 1:1 비교</h2>
+<p><strong>주신 텍스트를 옮긴 것이다.</strong> 내용 판단이 아니라 <strong>누락·오타 확인</strong>이면 된다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>볼 것</th>
+<th>대조 대상</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2-1</td>
+<td><code>05_ai_lifecycle.md</code> §2 <strong>11단계 표</strong></td>
+<td>4열(수행 책임 / 최종 책임 / 검토 / 출처 구분) 전부</td>
+</tr>
+<tr class="even">
+<td>2-2</td>
+<td><code>05</code> 머리말 <strong>출처 표기 3종</strong></td>
+<td>MS Standard / MS Standard 기반 해석·재구성 / Proposed Operating Model</td>
+</tr>
+<tr class="odd">
+<td>2-3</td>
+<td><code>06</code> §1 <strong>역할별 Accountability 9종</strong></td>
+<td>문구 그대로인지</td>
+</tr>
+<tr class="even">
+<td>2-4</td>
+<td><code>06</code> §2 <strong>검토 4종 정의</strong></td>
+<td>Development Review / QE·TEVV / AI GRC / Audit</td>
+</tr>
+<tr class="odd">
+<td>2-5</td>
+<td><code>06</code> §4 <strong>애자일 8역할</strong> + <strong>lifecycle 현실 배정 12행</strong></td>
+<td>각주 ¹² 포함</td>
+</tr>
+<tr class="even">
+<td>2-6</td>
+<td><code>08_ai_rmf_profile.md</code> §3~§6</td>
+<td>GOVERN 12 / MAP 14 / MEASURE 15 / MANAGE 12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>이미 잡아 놓은 원문 오류 하나</strong> — NIST Profile 표의 <code>MANAGE 4. verlie</code>는 <code>MANAGE 4.1</code>이다(원문이 각주로 정정). <code>08</code> §6에 표기해 뒀다.</p>
+<hr />
+<h2 id="3단계--본인-자산경력-사실-확인-15분">3단계 — 본인 자산·경력 사실 확인 (15분)</h2>
+<p><strong>제가 코드와 로그에서 읽었지만, 말해도 되는지는 본인 판단이다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>볼 것</th>
+<th>확인 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3-1</td>
+<td><code>02_structure.md</code> §2·§5 <strong>원칙 서술</strong></td>
+<td><del>fail-open 선제 공개</del> → <strong>결정: MI에서는 원칙만, 내 PoC는 물으면만.</strong> 원칙 문장이 남에게 요구할 기준으로 읽히는가</td>
+</tr>
+<tr class="even">
+<td>3-2</td>
+<td><code>03_demo.md</code> §1 <strong>입력 금지 3종</strong></td>
+<td>데모에서 정말 그 셋을 피할 것인가 (특히 급여 노출 케이스)</td>
+</tr>
+<tr class="odd">
+<td>3-3</td>
+<td><code>03_demo.md</code> §4 <strong>변경안</strong></td>
+<td>임계값 0.75→0.55를 실제 변경안으로 띄울 것인가</td>
+</tr>
+<tr class="even">
+<td>3-4</td>
+<td><code>02_structure.md</code> §7 <strong>규제</strong></td>
+<td>PIPA 국외이전 예외를 <strong>개수로 말하지 않는다</strong>는 제약에 동의하는가</td>
+</tr>
+<tr class="odd">
+<td>3-5</td>
+<td><code>05</code> §6 <strong>경력 대응표</strong></td>
+<td>4~9단계가 제품 보안 경험과 구조가 같다는 서술이 맞는가</td>
+</tr>
+<tr class="even">
+<td>3-6</td>
+<td><code>00_note.md</code> §1.2</td>
+<td><del>수치 범위</del> → <strong>결정: MI에서 수치 안 말함.</strong> 수치 없이도 "정의≠집행"이 전달되는가</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4단계--말하기-15분-위가-다-확정된-뒤">4단계 — 말하기 (15분) 위가 다 확정된 뒤</h2>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>볼 것</th>
+<th>하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>4-1</td>
+<td><code>00_note.md</code> 전체</td>
+<td><strong>굵은 문장이 입에 붙는지.</strong> 안 붙으면 내 말투로 고친다</td>
+</tr>
+<tr class="even">
+<td>4-2</td>
+<td><code>00_note.md</code> §0-1</td>
+<td>구조 블록 4장이 8~10분에 들어가는가</td>
+</tr>
+<tr class="odd">
+<td>4-3</td>
+<td><code>00_note.md</code> §1.4</td>
+<td><strong>로저스 사례</strong>가 들어갔다. 미담이 아니라 게이트 운영 방식으로 끝나는지 확인</td>
+</tr>
+<tr class="even">
+<td>4-4</td>
+<td><code>00_note.md</code> §7 Q&amp;A</td>
+<td>Q0-1·Q0-2·Q3·Q4가 실제로 올 질문인가</td>
+</tr>
+<tr class="odd">
+<td>4-5</td>
+<td><code>README.md</code></td>
+<td>준비 순서와 출력 목록이 맞는가</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="무엇이-바뀌면-무엇이-따라-바뀌는가-cascade">무엇이 바뀌면 무엇이 따라 바뀌는가 (cascade)</h2>
+<p>고칠 곳이 생기면 이 표를 본다. <strong>혼자 안 움직이는 항목들이다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>바뀌는 것</th>
+<th>따라 바뀌는 곳</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>기준선 (§0)</strong></td>
+<td><code>02</code> §0·§3·§6 / <code>05</code> 머리말·§2·§3 / <code>06</code> §2·§3·§6·§7 / <code>07</code> §6 / <code>08</code> §1 / <code>03_demo</code> §4 / <code>04_gate</code> §4 / <code>README</code> / <code>figures/baseline.dot</code>·<code>responsibility.dot</code> — <strong>사실상 전부</strong></td>
+</tr>
+<tr class="even">
+<td><strong>RACI</strong></td>
+<td><code>06</code> §2 / <code>05</code> §2·§3 (최종 책임 열과 일치해야)</td>
+</tr>
+<tr class="odd">
+<td><strong>Policy·Guardrail 세 질문</strong></td>
+<td><code>02</code> §2 / <code>07</code> §2 / <code>00_note</code> 슬라이드2·Q3 / <code>tech/02</code> / <code>tech/04</code></td>
+</tr>
+<tr class="even">
+<td><strong>자기 진단 3종</strong>(혼재·fail-open·Scope)</td>
+<td><code>02</code> §2·§5 / <code>07</code> §5 / <code>00_note</code> Q0-1·Q0-2 / <code>README</code> 자기 진단 절</td>
+</tr>
+<tr class="odd">
+<td><strong>수치 154/13/11</strong></td>
+<td><code>00_note</code> §1.2 / <code>03_demo</code> §1 / <code>07</code> §2 / <code>README</code></td>
+</tr>
+<tr class="even">
+<td><strong>Scope 좌표</strong>(Gen 3 / Agentic 3)</td>
+<td><code>02</code> §4·§5 / <code>04_gate</code> §5 / <code>00_note</code> Q2·Q4</td>
+</tr>
+<tr class="odd">
+<td><strong>그림 내용</strong></td>
+<td><code>.dot</code>을 고치고 재렌더 → <code>figures/README.md</code> 상태 열 갱신</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="시간이-없을-때">시간이 없을 때</h2>
+<table>
+<thead>
+<tr class="header">
+<th>가진 시간</th>
+<th>하는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>10분</strong></td>
+<td>0단계 + 4-3(마찰 장면)</td>
+</tr>
+<tr class="even">
+<td><strong>30분</strong></td>
+<td>0단계 + 1단계 + 4-3</td>
+</tr>
+<tr class="odd">
+<td><strong>70분</strong></td>
+<td>전부</td>
+</tr>
+</tbody>
+</table>
+<p><strong>0단계를 빼면 안 된다.</strong> 나머지 전부가 거기에 매달려 있다.</p>
+<hr />
+<h2 id="내가-가장-불확실한-것">내가 가장 불확실한 것</h2>
+<p><strong>맨 위 「지금 확인이 필요한 것」의 B-1 · B-2 · B-3</strong>이다. 그 셋만 봐 주시면 된다.</p>
+</body>
+</html>

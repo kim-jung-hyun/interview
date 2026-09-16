@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>09_ai_grc_review_scope_v0.1</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">09_ai_grc_review_scope_v0.1</h1>
+</header>
+<h1 id="ai-grc-engineer의-검토-범위--v01-️-폐기">AI GRC Engineer의 검토 범위 — v0.1 ⚠️ 폐기</h1>
+<blockquote>
+<p><strong>이 문서는 <code>09_ai_grc_review_scope_v0.2.md</code>로 대체되었다.</strong> v0.1은 ③에서 「AI GRC와 Security가 같은 자리일 수 있다」를 <strong>미해결 가정</strong>으로 두었다. 조직 확인 결과 <strong><code>Security Architecture</code>가 별도 팀</strong>이어서 그 가정은 기각됐다. <strong>v0.2를 보라.</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>무엇을 하는 문서인가</strong> <code>05_ai_lifecycle.md</code> §2-B의 「검토」 열을 <strong>지원 포지션 관점에서 다시 읽은 것</strong>이다. lifecycle 11단계 중 <strong>내가 검토하는 곳이 어디이고, 없는 곳이 왜 없는가</strong>를 정리한다.</p>
+<p><strong>지원 포지션</strong> <code>Staff AI Security **Governance** **Engineer** (AI GRC)</code></p>
+<p><strong>근거</strong> <code>05_ai_lifecycle.md</code> §2-A·§2-B (MS Standard 원문 표) / <code>06_ai_responsibility.md</code> §1 (역할별 Accountability) / <code>02_structure.md</code> §0 (기준선)</p>
+<p><strong>버전</strong> v0.1 — 최초 작성. 조직 확인(D-1) 후 v0.2로 갱신 예정</p>
+</blockquote>
+<hr />
+<h2 id="요약--네-가지">요약 — 네 가지</h2>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>발견</th>
+<th>성격</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>①</td>
+<td><strong>내 검토 6곳이 AI GRC의 Accountability 문구와 그대로 맞는다</strong></td>
+<td>확인</td>
+</tr>
+<tr class="even">
+<td>②</td>
+<td><strong>내가 없는 4곳은 「빠진 것」이 아니라 분리선이다</strong></td>
+<td>해석</td>
+</tr>
+<tr class="odd">
+<td>③</td>
+<td><strong>이 JD에서는 「AI GRC」와 「Security」가 같은 자리일 수 있다</strong></td>
+<td><strong>확인 필요</strong></td>
+</tr>
+<tr class="even">
+<td>④</td>
+<td><strong>Engineer이므로 「검토」에서 끝나지 않는다</strong></td>
+<td>해석</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="①-내-검토는-6곳이고-성격이-두-종류로-갈린다">① 내 검토는 6곳이고, 성격이 두 종류로 갈린다</h2>
+<p><code>05</code> §2-B의 검토 열에서 AI GRC가 나오는 단계는 <strong>1 · 2 · 4 · 6 · 8 · 9</strong>다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>성격</th>
+<th>단계</th>
+<th>무엇을 보는가 (원문)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>분류·기준 정의</strong> (전단계)</td>
+<td><strong>1</strong> AI use case 식별</td>
+<td>intended use와 stakeholder 식별 결과</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><strong>2</strong> Impact Assessment</td>
+<td>assessment 완전성과 risk classification</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><strong>4</strong> Responsible Release Criteria 정의</td>
+<td>위험 coverage</td>
+</tr>
+<tr class="even">
+<td><strong>운영 추적·escalation</strong> (후단계)</td>
+<td><strong>6</strong> Reviewer 승인</td>
+<td>분야별 검토 또는 sign-off</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><strong>8</strong> Ongoing Monitoring</td>
+<td>KRI와 control 상태</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><strong>9</strong> Gap Management</td>
+<td>remediation · residual risk · 기한 추적</td>
+</tr>
+</tbody>
+</table>
+<p><strong>AI GRC의 Accountability 문구와 그대로 맞는다</strong></p>
+<pre><code>기준 · 분류 · oversight · gap escalation 체계의 운영
+└──────┬──────┘   └────────┬─────────┘
+   1 · 2 · 4          6 · 8 · 9
+</code></pre>
+<p>앞 세 곳이 <strong>기준·분류</strong>, 뒤 세 곳이 <strong>oversight·gap escalation</strong>이다. 원문 표가 스스로 맞아떨어진다.</p>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"제 검토가 여섯 단계에 걸쳐 있는데 <strong>성격이 두 종류입니다.</strong> 앞의 1·2·4단계는 <strong>분류와 기준 정의</strong>이고, 뒤의 6·8·9단계는 <strong>운영 추적과 escalation</strong>입니다.</p>
+<p>이게 AI GRC의 Accountability 문구 그대로입니다 — <strong>기준·분류·oversight·gap escalation 체계의 운영.</strong>"</p>
+</blockquote>
+<hr />
+<h2 id="②-내가-없는-4곳은-빠진-것이-아니라-분리선이다">② 내가 없는 4곳은 「빠진 것」이 아니라 분리선이다</h2>
+<p>검토 열에 AI GRC가 <strong>없는</strong> 단계는 <strong>5 · 7 · 10 · 11</strong>이다. 각각 이유가 있다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>단계</th>
+<th>검토 주체 (원문)</th>
+<th>내가 없는 이유</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>5</strong> Pre-release Evaluation</td>
+<td><strong>개발팀과 분리된 평가자</strong>가 성능·안전·보안·통제 효과성 검증</td>
+<td><strong>분리선 ①</strong> — 시험은 QE/TEVV가 한다. <strong>내가 기준을 만들고 내가 시험하면 기준과 판정이 한 사람에게 모인다</strong></td>
+</tr>
+<tr class="even">
+<td><strong>7</strong> Deployment</td>
+<td>Change Management와 <strong>Security</strong>가 승인된 configuration 확인</td>
+<td>배포 구성 확인은 운영 통제다 → <strong>단, ③ 참고</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>10</strong> 재평가 · 중단</td>
+<td><strong>Review Board</strong>가 재승인 또는 중단 결정</td>
+<td><strong>분리선 ②</strong> — 재승인·중단은 <strong>결정</strong>이고 내 자리가 아니다. <strong>분류를 다시 하는 것은 3단계로 되돌아가는 것</strong>이고 그때 내가 수행한다</td>
+</tr>
+<tr class="even">
+<td><strong>11</strong> Lifecycle 전체 Audit</td>
+<td>프로세스 준수와 control evidence를 독립 검증</td>
+<td><strong>분리선 ③의 최종 보장 장치</strong> — 감사는 위임되지 않는다</td>
+</tr>
+</tbody>
+</table>
+<p><strong>10단계의 논리를 한 번 더</strong> 원문 A2.1~A2.3이 Sensitive·Restricted Use의 <strong>정기 재검토</strong>를 요구하고, 그 분류의 수행 책임이 3단계의 AI GRC다. 따라서 <strong>재평가 시 분류를 다시 하는 것은 3단계로 되돌아가는 경로</strong>이고, 10단계 자체의 검토 주체가 Review Board인 것과 모순되지 않는다.</p>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"검토 열에서 제가 없는 곳이 네 군데인데, <strong>빠진 게 아니라 의도된 것</strong>입니다.</p>
+<p>5단계 시험은 QE가 해야 합니다 — <strong>제가 기준을 만들고 제가 시험하면 분리선이 무너집니다.</strong> 대신 4단계에서 <strong>무엇을 시험해야 하는지를 기준으로 못박는 것</strong>이 제 일입니다.</p>
+<p>10단계 재승인·중단은 결정이고, 11단계 감사는 독립성이 핵심입니다. <strong>제가 들어가면 안 되는 자리입니다.</strong>"</p>
+</blockquote>
+<p>→ <strong>이 답이 「오너십이 좁은 게 아니냐」는 질문을 선점한다.</strong> 좁은 게 아니라 <strong>경계가 설계된 것</strong>이다.</p>
+<hr />
+<h2 id="③-이-jd에서는-ai-grc와-security가-같은-자리일-수-있다--확인-필요">③ 이 JD에서는 「AI GRC」와 「Security」가 같은 자리일 수 있다 ★ 확인 필요</h2>
+<p>원문 검토 열이 두 곳에서 <strong>다르게</strong> 쓴다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>단계</th>
+<th>원문 검토 열</th>
+<th>함의</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>6</strong> Reviewer 승인</td>
+<td><strong>AI GRC · Security · Privacy</strong>가 분야별 검토 또는 sign-off</td>
+<td>세 자리가 <strong>분리된 조직</strong> 전제</td>
+</tr>
+<tr class="even">
+<td><strong>7</strong> Deployment</td>
+<td>Change Management와 <strong>Security</strong>가 승인된 configuration 확인</td>
+<td><strong>AI GRC는 없고 Security만</strong> 있다</td>
+</tr>
+</tbody>
+</table>
+<p>그런데 지원 직함이 **<code>AI Security Governance Engineer</code>**다. <strong>AI GRC와 Security가 한 자리라면 7단계 배포 구성 확인도 내 검토 범위에 들어온다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>가정</th>
+<th>7단계에서 내 위치</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AI GRC ≠ Security (별도 조직)</td>
+<td><strong>검토 없음</strong> — 원문 그대로</td>
+</tr>
+<tr class="even">
+<td><strong>AI GRC = Security</strong> (이 자리가 겸함)</td>
+<td><strong>승인된 configuration 확인이 내 검토</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것 — 역질문으로 쓴다</strong></p>
+<blockquote>
+<p>"원문 운영모델은 AI GRC와 Security를 별도 검토 주체로 씁니다. <strong>그런데 이 포지션은 AI Security Governance라서 두 역할이 한 자리일 수 있습니다.</strong></p>
+<p>그러면 <strong>7단계 배포 시 승인된 configuration 확인도 제 범위에 들어옵니다.</strong> 조직에서 두 역할이 분리되어 있는지, 아니면 이 자리가 둘을 겸하는지 확인이 필요합니다."</p>
+</blockquote>
+<p>→ <strong>역질문</strong> "AI 보안 검토와 AI 거버넌스 검토가 같은 조직입니까, 분리되어 있습니까?"</p>
+<p>⚠️ <strong>이 문서 v0.2의 전제가 이것이다.</strong> 답을 받으면 7단계 행을 확정한다.</p>
+<hr />
+<h2 id="④-engineer이므로-검토에서-끝나지-않는다">④ Engineer이므로 「검토」에서 끝나지 않는다</h2>
+<p>4단계를 보면 AI GRC가 <strong>수행 책임에도 있고 검토에도 있다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>4단계 Responsible Release Criteria 정의</th>
+<th>원문</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>수행 책임</strong></td>
+<td>개발, QE, Security, <strong>AI GRC</strong></td>
+</tr>
+<tr class="even">
+<td><strong>검토</strong></td>
+<td>QE가 측정 가능성, <strong>AI GRC가 위험 coverage</strong></td>
+</tr>
+</tbody>
+</table>
+<p>3단계도 같다 — <strong>수행 책임에 AI GRC</strong>가 있다(최종 책임은 Responsible AI Approver).</p>
+<table>
+<thead>
+<tr class="header">
+<th>AI GRC가 수행 책임인 단계</th>
+<th>하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>3</strong> Sensitive·Restricted Use 분류</td>
+<td>분류안을 만든다</td>
+</tr>
+<tr class="even">
+<td><strong>4</strong> Responsible Release Criteria 정의</td>
+<td>기준을 만든다</td>
+</tr>
+</tbody>
+</table>
+<p><strong>이게 <code>Engineer</code> 직함의 의미다.</strong> 위험 coverage를 검토만 하는 게 아니라 <strong>기준을 기계가 읽는 형태로 만드는 것</strong>(policy-as-code)까지 한다. 그게 JD 1.1의 <code>Architect policy-as-code rule sets</code>다.</p>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"4단계에서 저는 수행과 검토 양쪽에 들어갑니다. <strong>위험 coverage를 검토하는 것만이 아니라 기준 자체를 기계가 읽는 형태로 만드는 것</strong>까지가 제 일이라고 봅니다.</p>
+<p><strong>직함이 Engineer인 이유가 그것이라고 이해했습니다</strong> — 문서로 된 기준을 <strong>개발팀이 SW 구조에 넣을 수 있는 형태로 바꾸는 자리</strong>입니다."</p>
+</blockquote>
+<p>→ 이것이 기준선의 <strong>산출물 ①</strong>(개발팀용 기준과 가이드)이 나오는 지점이다.</p>
+<hr />
+<h2 id="정리--한-장으로">정리 — 한 장으로</h2>
+<pre><code>lifecycle 11단계에서 AI GRC Engineer의 위치
+
+수행 (R)   : 3 분류안 작성 · 4 기준 작성            ← Engineer, 산출물 ①
+검토 (C)   : 1 · 2 · 4 (분류·기준)                  ← 기준·분류
+             6 · 8 · 9 (sign-off·KRI·gap 추적)      ← oversight·escalation
+최종책임(A) : **없음**                               ← 기준 제공자, 승인하지 않는다
+부재       : 5 시험 · 10 결정 · 11 감사              ← 분리선 ①②③
+             7 배포 구성 확인                        ← ③ 확인 필요
+</code></pre>
+<p><strong>한 문장</strong></p>
+<blockquote>
+<p>"저는 <strong>3·4단계에서 만들고, 여섯 단계에서 검토하고, 어디에서도 최종 승인하지 않습니다.</strong> 5·10·11단계에 제가 없는 것은 분리선이고, 7단계는 조직 구조에 따라 갈립니다."</p>
+</blockquote>
+<hr />
+<h2 id="변경-이력">변경 이력</h2>
+<table>
+<thead>
+<tr class="header">
+<th>버전</th>
+<th>날짜</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>v0.1</strong></td>
+<td>2026-09-16</td>
+<td>최초 작성. <code>05</code> §2-B를 JD 관점으로 재검토 — 발견 4건</td>
+</tr>
+<tr class="even">
+<td>v0.2 (예정)</td>
+<td>—</td>
+<td><strong>D-1 답변 반영</strong> — AI GRC와 Security의 조직 분리 여부에 따라 7단계 행 확정</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

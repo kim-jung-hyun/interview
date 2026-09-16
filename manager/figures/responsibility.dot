@@ -1,0 +1,47 @@
+// AI Responsibility — 네 진영과 세 분리선
+// 근거: 05. MS RAI v2 「역할별 핵심 Accountability」 / 03. NIST Profile GOVERN 2.1
+// 정본: manager/06_ai_responsibility.md §1·§3  (내용 변경 금지)
+// 핵심: AI GRC는 lifecycle 11단계 어디에서도 「최종 책임」이 아니다 — 기준을 만들고 escalation한다
+digraph responsibility {
+  rankdir=TB; compound=true; newrank=true; nodesep=0.3; ranksep=0.5; bgcolor="white";
+  node [shape=box, style="rounded,filled", fillcolor="white", color="#333333",
+        fontname="Noto Sans CJK KR", fontsize=11, width=2.9, height=0.45];
+  edge [fontname="Noto Sans CJK KR", fontsize=9, color="#333333"];
+
+  subgraph cluster_grc {
+    label="기준을 만드는 쪽"; fontname="Noto Sans CJK KR"; fontsize=12; style="rounded,bold"; color="#333333"; bgcolor="#eeeeee";
+    GRC [label="AI GRC  ★ 내 자리\n기준 · 분류 · oversight · gap escalation\n체계의 운영", style="filled,bold", fillcolor="#e0e0e0", width=3.6];
+  }
+  subgraph cluster_make {
+    label="구현하는 쪽"; fontname="Noto Sans CJK KR"; fontsize=12; style="rounded"; color="#888888";
+    DEV [label="Development Owner\n설계·코드·모델 통합·기술적 remediation"];
+    SYS [label="AI System Owner\n승인된 요구사항과 control로 운영"];
+  }
+  subgraph cluster_assure {
+    label="판정하는 쪽  =  Assurance   — 실행 · 모니터링 · 시험 · 승인 · 감사";
+    fontname="Noto Sans CJK KR"; fontsize=12; style="rounded,bold"; color="#333333"; bgcolor="#f7f7f7";
+    CTRL [label="Control Owner\ncontrol의 설계·구현상태·효과성\n→ 실행 · 모니터링"];
+    QE   [label="QE / TEVV Owner\n평가 방법과 결과의 신뢰성\n→ 시험"];
+    REL  [label="Release Approver\nevidence 근거 Go / No-go 결정\n→ 승인", style="filled,bold", fillcolor="#e8e8e8"];
+    AUD  [label="Internal Audit\n설계된 대로 작동하는지 독립 보증\n→ 감사"];
+  }
+  subgraph cluster_accept {
+    label="수용하는 쪽"; fontname="Noto Sans CJK KR"; fontsize=12; style="rounded"; color="#888888";
+    RISK [label="Risk Owner\nresidual risk 수용·완화·회피·이전 결정"];
+    BIZ  [label="Business Owner\n필요성·편익·intended use·사업상 위험"];
+  }
+
+  node [shape=plaintext, style="", fillcolor="", fontsize=10];
+  L1 [label="── 분리선 ①  만든 사람이 판정하지 않는다 ──"];
+  L2 [label="── 분리선 ②  판정한 사람이 위험을 수용하지 않는다 ──"];
+
+  // 내 산출물 두 갈래
+  GRC -> DEV  [label="① 개발팀용 기준·가이드\n(규제 requirement → SW 구조)", style=bold];
+  GRC -> CTRL [label="② evidence·audit 가능 구조 요건", style=bold];
+  GRC -> L2   [style=dotted, arrowhead=none, label="분리선 ③\n기준을 만든 사람이\n그 기준으로 판정하지 않는다"];
+
+  DEV -> L1 [style=invis]; SYS -> L1 [style=invis];
+  L1 -> CTRL [style=invis]; L1 -> QE [style=invis];
+  CTRL -> L2 [style=invis]; REL -> L2 [style=invis]; AUD -> L2 [style=invis];
+  L2 -> RISK [style=invis]; L2 -> BIZ [style=invis];
+}

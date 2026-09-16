@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>06_ai_responsibility</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">06_ai_responsibility</h1>
+</header>
+<h1 id="ai-responsibility--책임-체계">AI Responsibility — 책임 체계</h1>
+<blockquote>
+<p><strong>근거</strong> <code>05. Microsoft Responsible AI Standard v2 운영모델</code> / <code>03. NIST AI RMF Profile</code> GOVERN 2.1 — "Policy Owner, Implementation Owner, Assurance Owner 및 Risk Owner의 책임을 구분한다"</p>
+<p>출처 표기 기준은 <code>05_ai_lifecycle.md</code> 머리말과 동일 (<strong>MS Standard</strong> / <strong>MS Standard 기반 해석·재구성</strong> / <strong>Proposed Operating Model</strong>)</p>
+<p><strong>이 문서 §3이 기준선의 근거 문서다.</strong> 기준선 자체는 <code>02_structure.md</code> §0에 있고, 여기는 역할 9종 상세와 애자일 보정이다.</p>
+<p>그림: <code>figures/baseline.svg</code> (기준선) · <code>figures/responsibility.dot</code> / <code>.svg</code> (역할 상세)</p>
+</blockquote>
+<hr />
+<h2 id="1-역할별-핵심-accountability">1. 역할별 핵심 Accountability</h2>
+<p><strong>MS Standard</strong> — 원문 표</p>
+<table>
+<thead>
+<tr class="header">
+<th>역할</th>
+<th>Accountability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Business Owner</strong></td>
+<td>AI use case의 <strong>필요성, 편익, intended use 및 사업상 위험</strong></td>
+</tr>
+<tr class="even">
+<td><strong>AI System Owner</strong></td>
+<td>AI system이 <strong>승인된 요구사항과 control을 충족하도록 운영</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Development Owner</strong></td>
+<td><strong>설계·코드·모델 통합 및 기술적 remediation</strong></td>
+</tr>
+<tr class="even">
+<td><strong>QE / TEVV Owner</strong></td>
+<td><strong>평가 방법의 적절성과 시험 결과의 신뢰성</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Control Owner</strong></td>
+<td>특정 control의 <strong>설계, 구현 상태 및 효과성</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Risk Owner</strong></td>
+<td><strong>Residual risk의 수용·완화·회피·이전 결정</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Release Approver</strong></td>
+<td>release criteria와 <strong>evidence를 근거로 한 Go/No-go 결정</strong></td>
+</tr>
+<tr class="even">
+<td><strong>AI GRC</strong></td>
+<td><strong>기준·분류·oversight·gap escalation 체계의 운영</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Internal Audit</strong></td>
+<td>governance와 control이 설계된 대로 작동하는지 <strong>독립적으로 보증</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-development-review--qe--ai-grc--audit의-위치">2. Development Review · QE · AI GRC · Audit의 위치</h2>
+<p>Production 관점에서는 lifecycle마다 **수행 책임(Responsibility)**과 **최종 설명·의사결정 책임(Accountability)**을 분리해야 한다.</p>
+<p>네 종류의 검토가 <strong>서로 다른 것을 본다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>검토</th>
+<th>무엇을 보는가</th>
+<th>주체</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Development Review</strong></td>
+<td><strong>설계와 구현이 요구사항에 맞는지</strong> 검토</td>
+<td><strong>개발팀</strong> (Development Owner)</td>
+</tr>
+<tr class="even">
+<td><strong>QE / TEVV</strong></td>
+<td><strong>품질·안전·control effectiveness를 독립적으로 시험</strong></td>
+<td>QE/TEVV Owner</td>
+</tr>
+<tr class="odd">
+<td><strong>AI GRC</strong></td>
+<td><strong>위험 분류, 통제 기준, residual risk 및 예외 처리</strong> 검토</td>
+<td><strong>AI GRC ← 내 자리</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Audit</strong></td>
+<td><strong>프로세스와 통제가 실제로 준수되었는지 사후 독립 검증</strong></td>
+<td>Internal Audit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="역할별로-lifecycle에서-무엇을-하는가">역할별로 lifecycle에서 무엇을 하는가</h3>
+<blockquote>
+<p><strong><code>05_ai_lifecycle.md</code> §2의 원문 11단계 표를 역할 기준으로 뒤집은 것이다.</strong> 원문은 「단계별로 누가」이고 이 표는 「역할별로 어느 단계에서」다. <strong>셀 내용은 원문 그대로이며 기호를 쓰지 않는다.</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>역할</th>
+<th><strong>수행한다</strong> (Responsibility)</th>
+<th><strong>최종 책임을 진다</strong> (Accountability)</th>
+<th><strong>검토한다</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Business Owner</strong></td>
+<td>1 use case 식별</td>
+<td><strong>1</strong> use case 식별 · <strong>2</strong> Impact Assessment · <strong>10</strong> 재평가·중단</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>Product Owner</strong></td>
+<td>1 use case 식별 · 2 Impact Assessment · 10 재평가·중단</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>AI System Owner</strong></td>
+<td>—</td>
+<td><strong>2</strong> Impact Assessment · <strong>4</strong> Release Criteria · <strong>9</strong> Gap Management</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>Service / System Owner</strong></td>
+<td>—</td>
+<td><strong>7</strong> Deployment · <strong>8</strong> Ongoing Monitoring</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>개발 담당</strong> (Development)</td>
+<td>2 Impact Assessment(AI/ML) · 4 Release Criteria · 9 Gap Management · 10 재평가</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>Platform · MLOps · DevOps · 운영팀</strong></td>
+<td>7 Deployment · 8 Ongoing Monitoring</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>QE / TEVV</strong></td>
+<td>4 Release Criteria · 5 Pre-release Evaluation · 10 재평가</td>
+<td><strong>5</strong> Pre-release Evaluation</td>
+<td>4 측정 가능성 · 8 주기적 평가</td>
+</tr>
+<tr class="even">
+<td><strong>Security · Privacy 담당</strong></td>
+<td>2 Impact Assessment · 3 분류 · 4 Release Criteria · 5 Security Testing</td>
+<td>—</td>
+<td>6 분야별 sign-off · 7 승인된 configuration 확인</td>
+</tr>
+<tr class="odd">
+<td><strong>Control Owner</strong></td>
+<td>—</td>
+<td><strong>9</strong> Gap Management</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>Risk Owner</strong></td>
+<td>—</td>
+<td><strong>6</strong> Reviewer 승인 · <strong>10</strong> 재평가·중단</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>Release Approver</strong></td>
+<td>—</td>
+<td><strong>6</strong> Reviewer 승인</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>Responsible AI Approver</strong></td>
+<td>—</td>
+<td><strong>3</strong> Sensitive·Restricted Use 분류</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>Review Board</strong></td>
+<td>—</td>
+<td>—</td>
+<td>3 고위험 use case · <strong>10 재승인 또는 중단 결정</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Change Management</strong></td>
+<td>—</td>
+<td>—</td>
+<td>7 승인된 configuration 확인</td>
+</tr>
+<tr class="odd">
+<td><strong>Legal</strong></td>
+<td>3 Sensitive·Restricted Use 분류</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><strong>지정 Reviewer</strong></td>
+<td>6 Reviewer 승인</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>Internal Audit</strong></td>
+<td>11 Lifecycle 전체 Audit</td>
+<td><strong>11</strong> (Audit 책임자)</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>★ <strong>AI GRC — 내 자리</strong></td>
+<td>3 분류 · 4 Release Criteria</td>
+<td><strong>없다</strong></td>
+<td>1 intended use·stakeholder · 2 assessment 완전성·risk classification · 4 위험 coverage · 6 분야별 sign-off · 8 KRI·control 상태 · 9 remediation·residual risk·기한</td>
+</tr>
+</tbody>
+</table>
+<p><strong>출처</strong> 셀 내용은 <strong>MS Standard</strong> 원문 표를 옮긴 것이고, 역할 기준으로 뒤집은 것과 역할명 묶음은 <strong>Proposed Operating Model</strong>이다.</p>
+<h3 id="이-표를-읽는-법-세-가지">이 표를 읽는 법 세 가지</h3>
+<p><strong>1. AI GRC 행의 「최종 책임」이 비어 있다.</strong> 수행은 두 곳(3·4단계), 검토는 여섯 곳이다. <strong>기준선 그대로다 — 만들고 검토하되 판정하지 않는다.</strong></p>
+<p><strong>2. 「최종 책임」이 두 개인 단계가 셋이다.</strong></p>
+<ul>
+<li><strong>6단계 Reviewer 승인</strong> — Risk Owner(위험 수용)와 Release Approver(배포 결정)가 갈려 있다</li>
+<li><strong>2단계 Impact Assessment</strong> — Business Owner와 AI System Owner</li>
+<li><strong>9단계 Gap Management</strong> — Control Owner와 AI System Owner</li>
+</ul>
+<p>→ <strong>한 사람이 둘 다 갖지 않게 하는 것</strong>이 분리선의 실제 작동 방식이다.</p>
+<p><strong>3. 「검토」 열에만 나오는 주체가 셋이다.</strong> <strong>Review Board</strong>(3·10단계) · <strong>Change Management</strong>(7단계) · <strong>Legal</strong>(3단계 수행). → 조직에 이 셋이 없으면 <strong>3·7·10단계의 검토가 비어 있게 된다.</strong> 도입 시 먼저 확인할 항목이다.</p>
+<p><strong>말할 것</strong></p>
+<blockquote>
+<p>"<strong>이 표에서 제 행의 「최종 책임」이 비어 있습니다.</strong> 수행이 두 곳, 검토가 여섯 곳입니다.</p>
+<p><strong>오너십이 넓은 게 좋은 게 아니라, 어디에서 멈추는지가 명확한 게 좋다고 생각합니다.</strong> 3단계 분류를 제가 수행하지만 최종 책임은 Responsible AI Approver이고, 6단계 승인은 Risk Owner와 Release Approver가 나눠 갖습니다.</p>
+<p>그리고 <strong>최종 책임이 두 개인 단계가 셋 있습니다.</strong> 위험을 수용하는 사람과 배포를 결정하는 사람이 갈려 있다는 뜻이고, <strong>한 사람이 둘 다 가지면 분리선이 무너집니다.</strong>"</p>
+</blockquote>
+<hr />
+<h3 id="조직-실제-역할로의-매핑">조직 실제 역할로의 매핑</h3>
+<blockquote>
+<p><strong>【미작성 — 조직 확인 후 작성】</strong></p>
+<p>MS Standard의 역할은 <strong>직책 이름이 아니라 책임의 종류</strong>다. 조직에 그 이름의 자리가 없어도 책임은 어딘가에 있어야 한다. <strong>조직 역할 구조를 확인한 뒤 배정하는 것이 도입 초기 작업</strong>이고, 지금 채워 넣으면 추측이 된다.</p>
+<p><strong>확인할 것</strong></p>
+<ul>
+<li>Responsible AI Approver · Review Board · Release Approver · Internal Audit이 <strong>실제 어느 조직인지</strong></li>
+<li>Control Owner · Risk Owner에 해당하는 자리가 <strong>있는지</strong></li>
+<li>없으면 <strong>어느 기존 역할에 배정</strong>할 것인지</li>
+</ul>
+<p><strong>인터뷰에서 이 절을 펼치지 않는다.</strong> 물으면 이렇게 답한다 → "<strong>MS 표준의 역할은 직책이 아니라 책임의 종류입니다.</strong> 조직 역할 구조를 확인한 뒤 맞추는 것이 도입 초기 작업이라고 봅니다."</p>
+</blockquote>
+<h2 id="3-역할-경계--기준선-">3. 역할 경계 — 기준선 ★</h2>
+<blockquote>
+<p>이 절이 <strong>기준선의 정의</strong>다. <code>02_structure.md</code> §0은 이 절의 요약이다.</p>
+</blockquote>
+<h3 id="네-진영">네 진영</h3>
+<pre><code>┌─ 기준을 만드는 쪽 ────────────────────────── ★ 내 자리 ─┐
+│ AI GRC    기준·분류·oversight·gap escalation 체계의 운영 │
+└─────────────────────────────────────────────────────────┘
+    │ ① 기준·가이드              │ ② evidence·audit 가능 구조 요건
+    ▼                            ▼  (설계·구현을 거쳐 Assurance에 도달)
+┌─ 설계·구현하는 쪽 ────────────────────────────┐
+│ Security Architecture (별도 팀)  「어떻게」 설계 │
+│ Development Owner    설계·코드·모델 통합         │
+│ AI System Owner      승인된 요구사항과 control로 운영 │
+└──────────────────────────────────────────────┘
+          ╎ 분리선 ①  — 만든 사람이 판정하지 않는다
+┌─ 판정하는 쪽 = Assurance ─────────────────────────────────┐
+│ Control Owner     control의 설계·구현상태·효과성 → 실행·모니터링 │
+│ QE / TEVV Owner   평가 방법과 결과의 신뢰성        → 시험       │
+│ Release Approver  criteria와 evidence 기반 Go/No-go → 승인     │
+│ Internal Audit    설계된 대로 작동하는지 독립 보증  → 감사       │
+└───────────────────────────────────────────────────────────┘
+          ╎ 분리선 ②  — 판정한 사람이 위험을 수용하지 않는다
+┌─ 수용하는 쪽 ─────────────┐
+│ Risk Owner                │  residual risk 수용·완화·회피·이전 결정
+│ Business Owner            │  필요성·편익·사업상 위험
+└───────────────────────────┘
+
+분리선 ③ — **기준을 만든 사람이 그 기준으로 판정하지 않는다**   (내 자리 ↔ Assurance)
+</code></pre>
+<p><strong>Assurance는 실행·모니터링·감사 그리고 승인까지다.</strong> Release Approver는 Assurance 쪽이다.</p>
+<h3 id="내-자리--기준-제공자--결정이-아니라-결정의-전제를-만든다">내 자리 = 「기준 제공자」 — 결정이 아니라 결정의 전제를 만든다</h3>
+<p>내 자리는 <strong>AI GRC 하나</strong>다. 지원 직함 <code>Staff AI Security Governance Engineer (AI GRC)</code>가 그걸 말한다 — <strong>관리자가 아닌 개별 기여자(IC)이고, Governance는 기준을 세우는 일이다.</strong></p>
+<p>두 가지를 만든다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>산출물</th>
+<th>받는 쪽</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>①</strong></td>
+<td><strong>기준과 가이드</strong></td>
+<td><strong>1차: Security Architecture</strong> (별도 팀) → 2차: Development · AI System Owner</td>
+<td><strong>규제 등의 requirement를 SW 구조에 넣을 수 있는 형태로</strong> 변환한 기준</td>
+</tr>
+<tr class="even">
+<td><strong>②</strong></td>
+<td><strong>Assurance용 구조 요건</strong></td>
+<td>Control Owner · QE/TEVV · Release Approver · Internal Audit</td>
+<td><strong>assessment 가능한 evidence</strong>와 <strong>audit 가능한 구조</strong>가 나오도록 하는 요건</td>
+</tr>
+</tbody>
+</table>
+<h3 id="근거는-원문-표의-구조다--내-해석이-아니다">근거는 원문 표의 구조다 — 내 해석이 아니다</h3>
+<p><code>05_ai_lifecycle.md</code> §2의 11단계 표에서 <strong>AI GRC는 「최종 책임」열에 한 번도 나오지 않는다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>AI GRC가 나오는 곳</th>
+<th>어느 열</th>
+<th>그 단계의 최종 책임</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3단계 Sensitive·Restricted Use 분류</td>
+<td><strong>수행 책임</strong></td>
+<td>Responsible AI Approver</td>
+</tr>
+<tr class="even">
+<td>4단계 Release Criteria 정의</td>
+<td><strong>수행 책임</strong></td>
+<td>AI System Owner</td>
+</tr>
+<tr class="odd">
+<td>6단계 Reviewer 승인</td>
+<td><strong>검토 / 분야별 sign-off</strong></td>
+<td>Release Approver 또는 Risk Owner</td>
+</tr>
+<tr class="even">
+<td>1·2·8·9단계</td>
+<td><strong>검토</strong></td>
+<td>Business Owner / System Owner / Control Owner</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것 — 이번 인터뷰에서 가장 중요한 대사</strong></p>
+<blockquote>
+<p><strong>"제 자리는 「기준 제공자」입니다. 저는 승인하지 않습니다 — 승인이 가능하도록 만듭니다."</strong></p>
+<p>"제가 하는 일은 두 가지입니다. 하나는 <strong>규제나 거버넌스 requirement를 개발팀이 SW 구조에 넣을 수 있는 기준과 가이드로 바꾸는 것</strong>입니다. 다른 하나는 <strong>그 구조가 Assurance가 assessment할 수 있는 evidence를 내고 audit 가능하도록 만드는 것</strong>입니다.</p>
+<p><strong>실행·모니터링·감사·승인은 전부 Assurance입니다.</strong> Release Approver도 Assurance 쪽이고 제 자리가 아닙니다. JD 1.2가 'Assurance팀이 execute·monitor·audit한다'고 쓴 것과 같습니다.</p>
+<p>그리고 이건 제 해석이 아니라 <strong>운영모델 표의 구조입니다</strong> — AI GRC는 11단계 어디에서도 최종 책임 열에 나오지 않고, 수행 책임과 검토 열에만 나옵니다.</p>
+<p><strong>제 산출물은 결정이 아니라 결정의 전제입니다.</strong> 제가 기준을 만들고 제가 그 기준으로 판정하면, 기준 자체를 검증할 사람이 없어집니다."</p>
+</blockquote>
+<h3 id="왜-이-경계가-더-강한가">왜 이 경계가 더 강한가</h3>
+<table>
+<tbody>
+<tr class="odd">
+<td>게이트에 서지 않는다</td>
+<td><strong>개발 속도를 직접 막지 않는다.</strong> 막는 쪽이 아니라 <strong>통과 조건을 제공하는 쪽</strong>이다</td>
+</tr>
+<tr class="even">
+<td>자기 채점을 하지 않는다</td>
+<td>내 기준의 품질이 <strong>Assurance의 판정 결과로 검증된다</strong></td>
+</tr>
+<tr class="odd">
+<td>JD와 맞는다</td>
+<td>1.5의 <code>establishing clear decision **Framework**</code> — <strong>framework를 세우는 것이고 decision을 하는 것이 아니다</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-조직-적용--adaptation">4. 조직 적용 — adaptation</h2>
+<blockquote>
+<p><strong>【미작성 — 조직 확인 후 작성】</strong></p>
+<p>§1~§3의 <strong>MS Standard 기준이 정본</strong>이다. 실제 조직의 역할 구조에 맞춰 배정하는 작업은 <strong>조직을 확인한 뒤</strong> 한다.</p>
+<p><strong>근거 문서가 명시하는 제약 하나</strong> — 일반적인 애자일/Scrum 조직에는 <strong>Control Owner · Risk Owner · Release Approver가 직책으로 존재하지 않는다.</strong> Scrum의 공식 Accountability는 Product Owner · Developers · Scrum Master 세 개뿐이다. 그래서 조직이 애자일 구조라면 <strong>기존 역할에 책임을 배정하고 팀 권한을 넘는 위험만 관리계층으로 올리는</strong> 형태가 된다. <strong>구체 배정은 조직 확인 후.</strong></p>
+</blockquote>
+<details>
+<summary>원문 보관 — 애자일 역할 기반 운영모델 (인터뷰에 쓰지 않음)</summary>
+
+<h3 id="원문-애자일-역할-기반-운영모델">(원문) 애자일 역할 기반 운영모델</h3>
+<p><strong>MS Standard</strong> Scrum의 공식 Accountability는 <strong>Product Owner / Developers / Scrum Master 세 가지뿐</strong>이다. Control Owner·Risk Owner·Release Approver는 <strong>애자일 기본 역할로 존재하지 않는다.</strong></p>
+<blockquote>
+<p>(원문) 애자일 팀은 Product Owner가 risk와 control requirement를 backlog로 관리하고 Developers가 구현·시험·모니터링한다. 팀의 권한을 초과하거나 중대한 residual risk가 존재하는 경우에는 조직에서 지정한 관리책임자 또는 governance review 체계로 escalation한다.</p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th>애자일 역할</th>
+<th>Responsibility — 수행 업무</th>
+<th><strong>Accountability — 최종 책임</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Product Owner</strong></td>
+<td>AI use case, intended use, stakeholder, 제품 요구사항, risk·control requirement를 Product Backlog에 반영하고 우선순위를 결정</td>
+<td>제품 가치, 사용 범위, backlog 및 release 우선순위</td>
+</tr>
+<tr class="even">
+<td><strong>Developers</strong></td>
+<td>모델·데이터·prompt·application·security control 구현, 테스트, monitoring instrumentation 및 gap 수정</td>
+<td>Sprint Increment의 품질과 Definition of Done 충족</td>
+</tr>
+<tr class="odd">
+<td><strong>Scrum Master</strong></td>
+<td>AI GRC·Security·QE 검토가 workflow에 포함되도록 협업을 지원하고 impediment 제거</td>
+<td>Scrum Team의 프로세스 효과성과 지속적 개선</td>
+</tr>
+<tr class="even">
+<td><strong>QE / Tester</strong> ¹</td>
+<td>Release Criteria를 test case로 변환하고 성능·안전·보안·회귀시험 수행</td>
+<td>시험 범위와 test evidence의 신뢰성</td>
+</tr>
+<tr class="odd">
+<td><strong>Security / Privacy 담당자</strong> ¹</td>
+<td>Threat modeling, security·privacy requirement 정의 및 전문 검토</td>
+<td>전문영역 검토 결과와 발견된 위험의 escalation</td>
+</tr>
+<tr class="even">
+<td><strong>운영 / MLOps 담당자</strong> ¹</td>
+<td>배포, logging, drift·failure monitoring, rollback과 incident response 수행</td>
+<td>Production 운영 안정성과 monitoring evidence</td>
+</tr>
+<tr class="odd">
+<td><strong>AI GRC 담당자</strong> ¹</td>
+<td>Impact Assessment, use classification, 정책·규제 적용 여부 및 미충족 gap 검토</td>
+<td><strong>Governance review의 일관성과 미해결 중요 위험의 escalation</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Business Sponsor / Management</strong> ²</td>
+<td>중대한 residual risk와 예외를 검토하고 배포·계속 운영·중단 결정</td>
+<td>조직이 수용하는 중대한 AI 위험에 대한 <strong>최종 의사결정</strong></td>
+</tr>
+</tbody>
+</table>
+<p>¹ 별도의 직책이 아니라 <strong>Developers에 포함된 전문 역량이거나 공유 지원조직</strong>일 수 있다. ² Scrum 역할은 아니지만 <strong>팀의 권한을 넘는 위험에 대한 조직적 의사결정 주체</strong>다.</p>
+<p><strong>주목</strong> 애자일 모델에서도 <strong>AI GRC의 Accountability는 「escalation」까지다.</strong> 결정이 아니다.</p>
+<h3 id="lifecycle별-현실적인-배정">Lifecycle별 현실적인 배정</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Lifecycle</th>
+<th>주 수행 역할</th>
+<th><strong>최종 판단</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AI use case 식별</td>
+<td>Product Owner</td>
+<td>Product Owner</td>
+</tr>
+<tr class="even">
+<td>Impact Assessment</td>
+<td>PO + Developers + Security/Privacy + AI GRC</td>
+<td><strong>Product Owner가 완결성을 확보</strong></td>
+</tr>
+<tr class="odd">
+<td>Sensitive·Restricted Use 분류</td>
+<td>AI GRC + Legal/Security</td>
+<td><strong>조직 정책상 지정된 관리자</strong></td>
+</tr>
+<tr class="even">
+<td>Release Criteria 정의</td>
+<td>PO + Developers + QE</td>
+<td>Product Owner</td>
+</tr>
+<tr class="odd">
+<td>Pre-release Evaluation</td>
+<td>Developers + QE</td>
+<td>팀은 결과를 확인하고 <strong>PO가 release 판단</strong></td>
+</tr>
+<tr class="even">
+<td>일반 Release</td>
+<td>Product Owner + Developers</td>
+<td>Product Owner</td>
+</tr>
+<tr class="odd">
+<td><strong>고위험·예외 Release</strong></td>
+<td>팀이 <strong>evidence 제출</strong></td>
+<td><strong>Business Sponsor / Management</strong></td>
+</tr>
+<tr class="even">
+<td>Deployment</td>
+<td>Developers / MLOps</td>
+<td>Developers가 Increment와 배포 품질 책임</td>
+</tr>
+<tr class="odd">
+<td>Ongoing Monitoring</td>
+<td>Developers / MLOps</td>
+<td><strong>Product Owner가 제품 대응 우선순위 결정</strong></td>
+</tr>
+<tr class="even">
+<td>Gap Management</td>
+<td>PO가 backlog화, Developers가 수정</td>
+<td><strong>PO가 우선순위, Developers가 구현 완료 책임</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>중대한 residual risk 수용</strong></td>
+<td>팀이 <strong>escalation</strong></td>
+<td><strong>Business Sponsor / Management</strong></td>
+</tr>
+<tr class="even">
+<td><strong>중단</strong></td>
+<td>PO가 제안하거나 긴급 조치</td>
+<td><strong>권한 범위에 따라 PO 또는 Management</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+</details>
+
+<h2 id="5-escalation-경계">5. Escalation 경계</h2>
+<blockquote>
+<p><strong>【EXAMPLE — 조직에 맞게 조정 필요】</strong> 아래 6개 기준은 <strong>근거 문서에 명시된 것</strong>이다. 그러나 <strong>"어디까지 팀이 자체 처리하고 어디서부터 올리는가"라는 경계선은 조직마다 다르다.</strong> 여기 적은 경계는 <strong>예시이고 내 판단</strong>이다. <strong>조직의 위험 허용 수준과 심의체계를 확인한 뒤 정해야 한다.</strong></p>
+</blockquote>
+<h3 id="팀이-자체적으로-수용하면-안-되는-사안--6개">팀이 자체적으로 수용하면 안 되는 사안 — 6개</h3>
+<p><strong>MS Standard 기반 해석</strong> — 이 경우에만 관리계층이나 공식 심의체계로 escalation한다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>기준</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>법률·규제 위반 가능성</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>개인정보 또는 중요정보 유출</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Sensitive·Restricted Use 해당</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Responsible Release Criteria의 <strong>중대한 미충족</strong></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><strong>승인 우회나 안전 control 실패</strong></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>대규모 고객·사용자 영향</td>
+</tr>
+</tbody>
+</table>
+<h3 id="그-아래는-어떻게-하는가--example">그 아래는 어떻게 하는가 — <strong>EXAMPLE</strong></h3>
+<blockquote>
+<p>⚠️ <strong>이 경계선은 내 판단이고 예시다.</strong> 조직 확인 후 조정한다.</p>
+</blockquote>
+<p><strong>EXAMPLE</strong> — 일반 gap은 개발팀 안에서 끝낸다.</p>
+<pre><code>Monitoring alert → 백로그 등록 → 우선순위 결정 → 수정 → 검증 → 배포
+</code></pre>
+<p><strong>말할 것 — 경계선이 판단임을 밝힌다</strong></p>
+<blockquote>
+<p>"거버넌스의 실제 일은 <strong>게이트를 몇 개 두느냐가 아니라 어디에 두느냐</strong>라고 봅니다.</p>
+<p>전부에 게이트를 걸면 현장이 우회합니다. 아무것도 안 걸면 거버넌스가 없습니다. <strong>위 여섯 가지는 근거 문서가 제시한 것이고, 그 아래를 어떻게 처리할지는 조직의 위험 허용 수준에 따라 달라집니다.</strong></p>
+<p><strong>예를 들면</strong> 일반 gap은 개발팀 백로그에서 끝내게 두는 형태가 있습니다. <strong>다만 이건 제 예시이고, 실제 경계는 조직의 심의체계를 확인한 뒤 정하는 게 맞다고 봅니다 — 그 조정 자체가 제 첫 일이라고 생각합니다.</strong>"</p>
+</blockquote>
+<hr />
+<h2 id="6-자기-진단--내-poc의-역할-분리는-어떤-상태인가">6. 자기 진단 — 내 PoC의 역할 분리는 어떤 상태인가</h2>
+<table>
+<thead>
+<tr class="header">
+<th>분리선</th>
+<th>내 PoC 상태</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>① 만드는 쪽 ↔︎ 판정하는 쪽</td>
+<td><strong>혼재.</strong> 내가 만들고 내가 E2E 테스트를 썼다. 다만 <strong>테스트가 내 구현의 실패를 실제로 잡아냈다</strong> — 154건 중 13건</td>
+</tr>
+<tr class="even">
+<td>② 판정하는 쪽 ↔︎ 수용하는 쪽</td>
+<td><strong>없음.</strong> residual risk를 수용할 주체가 정의되지 않았다</td>
+</tr>
+<tr class="odd">
+<td>③ 기준 만드는 쪽 ↔︎ 판정하는 쪽</td>
+<td><strong>없음.</strong> 내가 기준을 쓰고 내가 그 기준으로 판정했다</td>
+</tr>
+</tbody>
+</table>
+<p><strong>말할 것 (먼저 꺼낸다)</strong></p>
+<blockquote>
+<p>"제 PoC는 1인 프로젝트라 세 분리선이 다 없습니다. <strong>특히 ③이 없습니다</strong> — 제가 기준을 쓰고 제가 그 기준으로 판정했습니다.</p>
+<p>다만 <strong>분리선 ①의 대용으로 테스트를 썼고, 그게 실제로 제 구현의 실패를 잡아냈습니다.</strong> 혼자 하면서도 '내가 만든 걸 내가 판정하지 않는다'를 구조로 흉내낼 수 있는 방법이 테스트라고 생각합니다.</p>
+<p>②와 ③은 <strong>조직이 있어야 성립하는 것이고, 이 역할에서 하고 싶은 일이 그것입니다.</strong>"</p>
+</blockquote>
+<hr />
+<h2 id="7-물으면-답할-것">7. 물으면 답할 것</h2>
+<h3 id="이-역할과-assurance팀의-경계는-어디입니까">"이 역할과 Assurance팀의 경계는 어디입니까?"</h3>
+<blockquote>
+<p>저는 <strong>기준을 만들고, 그 기준이 SW 구조에 들어갈 수 있게 개발팀을 가이드하고, 그 구조에서 Assurance가 쓸 evidence가 나오게</strong> 합니다. Assurance는 <strong>그 기준으로 실행·모니터링·감사하고 승인</strong>합니다. <strong>Release Approver도 Assurance 쪽입니다.</strong> <strong>제가 판정까지 하면 기준 자체를 검증할 사람이 없어집니다.</strong></p>
+</blockquote>
+<h3 id="그러면-결정-권한이-없는-역할인가요">"그러면 결정 권한이 없는 역할인가요?"</h3>
+<blockquote>
+<p><strong>결정 권한이 아니라 결정 가능성을 만드는 역할이라고 봅니다.</strong> Release Approver가 evidence를 근거로 Go/No-go를 하려면 <strong>그 evidence가 애초에 나오는 구조</strong>여야 합니다. Internal Audit이 독립 보증을 하려면 <strong>audit 가능한 형태로 남아 있어야</strong> 합니다. 그게 안 되어 있으면 승인은 서명이 되고 감사는 인터뷰가 됩니다. 그리고 escalation 경로는 제 Accountability입니다 — <strong>미해결 중요 위험을 올리는 것까지가 제 책임</strong>입니다.</p>
+</blockquote>
+<h3 id="residual-risk는-누가-받습니까">"residual risk는 누가 받습니까?"</h3>
+<blockquote>
+<p><strong>Risk Owner와 Business Sponsor입니다. 제가 아닙니다.</strong> 조직이 감수할 위험의 크기는 사업 책임자가 결정하는 것이고, 저는 그 판단에 필요한 근거 — <strong>무엇이 남았고 무엇으로 확인했는지</strong> — 를 만드는 쪽입니다.</p>
+</blockquote>
+<h3 id="ai-grc가-개발을-막는-조직이-되지-않겠습니까">"AI GRC가 개발을 막는 조직이 되지 않겠습니까?"</h3>
+<blockquote>
+<p><strong>저는 게이트에 서지 않습니다.</strong> §5의 여섯 가지만 escalation 대상이고 나머지는 팀 백로그에서 끝냅니다. 그리고 게이트를 걸 때 <strong>무엇을 제출하면 통과인지를 먼저 정해 두는 것</strong>이 제 일입니다. <strong>통과 조건이 없는 게이트가 개발을 막습니다.</strong></p>
+</blockquote>
+<h3 id="그-역할들이-우리-조직에-없으면요">"그 역할들이 우리 조직에 없으면요?"</h3>
+<blockquote>
+<p><strong>§4가 그 경우의 배정입니다.</strong> Control Owner·Risk Owner·Release Approver는 애자일 조직에 없는 직책입니다. 그래서 Product Owner가 risk와 control requirement를 backlog로 갖고, 팀 권한을 넘는 것만 관리계층으로 올립니다. <strong>역할표를 조직에 강요하는 게 아니라 조직 구조에 책임을 배정하는 순서가 맞다고 봅니다.</strong></p>
+</blockquote>
+</body>
+</html>

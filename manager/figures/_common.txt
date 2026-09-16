@@ -1,0 +1,1 @@
+공통 스타일: fontname="Noto Sans CJK KR", 흑백 인쇄 대비 위해 색 대신 선 종류/채움 사용
