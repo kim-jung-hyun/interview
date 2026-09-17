@@ -1,9 +1,3 @@
----
-title: AI GRC Control Architecture
-subtitle: 기준에서 실행 통제와 Assurance까지
-format: presentation
----
-
 # AI GRC Control Architecture
 
 ## 기준을 실행 가능한 통제로 전환하는 구조
