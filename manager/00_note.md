@@ -272,7 +272,7 @@
 4. **자기 진단을 먼저 꺼내지 않는다.** 정책·가드레일 혼재 / fail-open / Scope 불일치는 **원칙으로 말하고**, 내 PoC 실측은 물으면만 답한다. 이 인터뷰의 평가 대상이 아니다.
 5. **역할 경계를 침범하지 않는다.** 기준선 첫 칸만 내 자리다 — **실행·모니터링·시험·승인·감사는 전부 Assurance**라고 명시한다.
 6. 자산이 없는 항목(1.4)에서는 **없다고 먼저 말하고** 경력으로 넘어간다.
-7. **약어는 처음 쓸 때 풀어서 말한다.** 전체 목록은 `02_structure.md` 「약어」 절. 자주 나오는 것만:
+7. **약어는 처음 쓸 때 풀어서 말한다.** 전체 목록은 `03_#1.1-1.5_keywords.md` 「부록. 약어」 절. 자주 나오는 것만:
    - **AI GRC** = AI 거버넌스·위험·컴플라이언스 (AI Governance, Risk and Compliance)
    - **TEVV** = 시험·평가·검증·확인 (Test, Evaluation, Verification and Validation)
    - **PDP / PEP** = 정책 결정 지점 / 정책 집행 지점 (Policy Decision / Enforcement Point)
